@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import { Bot } from "../Bot";
 import EmbedMessage from "../Tools/EmbedMessage";
+import { MessageFormatter } from "../Tools/MessageFormatter";
 
 // DO NOT DELETE THIS COMMAND !
 module.exports = {
@@ -28,7 +29,9 @@ module.exports = {
         if(client.commands.has(args[0])){
           if (client.disabledCommands.has(args[0])) {
             client.disabledCommands.delete(args[0]);
-            return EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`);
+            const result = new MessageFormatter();
+            result.addEmbedMessage(EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`));
+            return result;
           } else {
             client.disabledCommands.set(args[0], true);
             return EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" has been disabled !`);

@@ -71,3 +71,31 @@ module.exports = {
   }
 }
 ```
+
+## Message
+DiscordJS v13 has introduced new features like Buttons or Select Menu components. So you can add them easily in your messages, with my tool `MessageFormatter` ! It easy to use, trust me :-)
+Just make a new instance of it and look at possibilites :
+```ts
+// Concider you're on a command file ...
+
+const result = new MessageFormatter();
+// add an Embed Message ... Pff, to easy :)
+result.addEmbedMessage(EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" hasenabled !`));
+
+// add a button ? Dude, I said it was easy to use, trust me !
+result.addButton("Get karmated", "💥", "DANGER", "karma_button");
+
+// add a selectMenu ? Look at that
+result.addSelectMenu("When you will download my project ?", [
+  { label: "NOW IT'S FANTASTIC !", description: "You're too strong dude", value: "now" },
+  { label: "NEVER YOU SUCK !", description: "Dude, go back learn HTML", value: "never" }
+], "download_menu");
+
+// All at same time ? Why not
+result.addEmbedMessage(...)
+  .addButton(...)
+  .addSelectMenu(...)
+  .setContent(...)
+
+return result;
+```

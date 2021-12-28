@@ -1,6 +1,7 @@
-import { Client, Collection, ClientOptions, Message, MessageEmbed } from 'discord.js';
+import { Client, Collection, ClientOptions, Message } from 'discord.js';
 import { CommandsRegister } from './Tools/CommandsRegister';
 import EmbedMessage from './Tools/EmbedMessage';
+import { MessageFormatter } from './Tools/MessageFormatter';
 
 export class Bot extends Client {
   commands: Collection<String, any> = new Collection();
@@ -68,16 +69,22 @@ export class Bot extends Client {
         }).catch(err => console.error(err));
 
         const newArgs = args != undefined ? args.map((el: any) => el.value) : []
-        await this.commands.get(interaction.command.name.toLocaleLowerCase()).execute(this, message, newArgs).then((result: any) => {
+        await this.commands.get(interaction.command.name.toLocaleLowerCase()).execute(this, message, newArgs).then((result: string | EmbedMessage | MessageFormatter) => {
           if (result){
             if (result instanceof EmbedMessage) {
               interaction.reply({ embeds: [result] });
+            } else if(result instanceof MessageFormatter){
+              interaction.reply(result.format());
             } else {
               interaction.reply(result);
             }
           }
           return;
         });
+      }else if(interaction.isButton()){
+        interaction.reply("You just clicked on a button !");
+      }else if(interaction.isSelectMenu()){
+        interaction.reply("You just selected a menu !");
       }
     })
   }
@@ -86,8 +93,14 @@ export class Bot extends Client {
     return this.config.name;
   }
 
-  sendMessage(message: Message, content: MessageEmbed | string){
-    message.reply(content instanceof MessageEmbed ? { embeds: [content] } : content);
+  sendMessage(message: Message, content: string | EmbedMessage | MessageFormatter){
+    if (content instanceof EmbedMessage) {
+      message.channel.send({ embeds: [content] });
+    } else if (content instanceof MessageFormatter) {
+      message.channel.send(content.format());
+    } else {
+      message.channel.send(content);
+    }
   }
 
   makeSheduledTask(duration: number, callback: () => void | void){
