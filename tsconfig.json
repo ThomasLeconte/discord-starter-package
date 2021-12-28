@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "pretty": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "experimentalDecorators": true,
+    "rootDir": ".",
+    "sourceMap": true,
+    "listFiles": true,
+    "newLine": "CRLF",
+    "noEmitOnError": true,
+    "outDir": "./dist"
+  },
+  "include": [
+    "./**/*.ts",
+    "./config.env",
+    "./**/*.yaml"
+  ],
+  "exclude": [
+    "./node_modules",
+    "./dist"
+  ]
+}

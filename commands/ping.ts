@@ -1,0 +1,14 @@
+import { Message } from "discord.js";
+import { Bot } from "../Bot";
+
+module.exports = {
+  name: 'ping',
+  description: 'Check bot status',
+  usage: '/ping',
+  slashCommand: false,
+  admin: false,
+
+  async execute(client: Bot, message: Message, args: string[]) {
+    return `${new Date().toLocaleString()} - :ping_pong: Pong !`;
+  }
+}
