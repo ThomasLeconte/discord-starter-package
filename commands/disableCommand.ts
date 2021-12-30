@@ -1,5 +1,5 @@
-import { Message } from "discord.js";
-import { Bot } from "../Bot";
+import { Interaction, Message } from "discord.js";
+import { Bot, EventType } from "../Bot";
 import EmbedMessage from "../Tools/EmbedMessage";
 import { MessageFormatter } from "../Tools/MessageFormatter";
 

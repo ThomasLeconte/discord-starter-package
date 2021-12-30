@@ -5,7 +5,10 @@ module.exports = {
   name: 'ping',
   description: 'Check bot status',
   usage: '/ping',
-  slashCommand: false,
+  slashCommand: {
+    enabled: false,
+    options: []
+  },
   admin: false,
 
   async execute(client: Bot, message: Message, args: string[]) {

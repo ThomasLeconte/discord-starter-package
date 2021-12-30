@@ -1,4 +1,5 @@
-import { Client, Collection, ClientOptions, Message } from 'discord.js';
+import { Client, Collection, ClientOptions, Message, Interaction } from 'discord.js';
+import { MessageHandler } from './Tools/MessageHandler';
 import { CommandsRegister } from './Tools/CommandsRegister';
 import EmbedMessage from './Tools/EmbedMessage';
 import { MessageFormatter } from './Tools/MessageFormatter';
@@ -7,13 +8,15 @@ export class Bot extends Client {
   commands: Collection<String, any> = new Collection();
   disabledCommands: Collection<String, any> = new Collection();
   config: BotConfig;
+  handler: MessageHandler;
 
   constructor(config: BotConfig) {
     super(config.options);
     this.config = config;
     this.login().then(() => {
       CommandsRegister.registerCommands(this);
-      this.handleMessages();
+      this.handler = new MessageHandler(this);
+      this.handler.listen();
     }).catch(err => {
       console.error(err);
       this.destroy();
@@ -22,71 +25,6 @@ export class Bot extends Client {
 
   login(){
     return super.login(this.config.token);
-  }
-
-  handleMessages(){
-    this.on('messageCreate', async (msg) => {
-      if(msg.author.bot) return;
-      if (!msg.content.startsWith(this.config.prefix)) return;
-
-      const args = msg.content.slice(this.config.prefix.length).split(' ');
-      const command = args.shift().toLocaleLowerCase();
-
-      if(this.disabledCommands.has(command)){
-        this.sendMessage(msg, EmbedMessage.showError(this, `**${this.config.name} - Error**`, `The command "${command}" is disabled !`));
-      }else{
-        if (this.commands.has(command)) {
-          await this.commands.get(command).execute(this, msg, args).then((result: string | EmbedMessage) => {
-            if (result) this.sendMessage(msg, result);
-          });
-        } else {
-          this.sendMessage(msg, EmbedMessage.showError(this, `**${this.config.name} - Error**`, `The command "${command}" does not exist.`));
-        }
-      }
-    })
-
-    this.on('interactionCreate', async interaction => {
-      if(interaction.isApplicationCommand()){
-        const args = (interaction.options as any)._hoistedOptions
-        const channel = this.channels.cache.find(c => c.id == interaction.channelId)
-        const guild = this.guilds.cache.get(interaction.guildId)
-        let message = null
-        await guild.members.fetch().then(members => {
-          let member = members.get(interaction.member.user.id)
-          if (args != undefined && args.find((a: any) => a.type == "USER") != null) {
-            const mention_id = args.find((arg: any) => arg.type == "USER").value
-            message = {
-              guild: guild,
-              channel: channel,
-              member: member,
-              author: member.user,
-              mention: members.get(mention_id).user,
-              interaction
-            }
-          } else {
-            message = { guild: guild, channel: channel, member: member, author: member.user, interaction }
-          }
-        }).catch(err => console.error(err));
-
-        const newArgs = args != undefined ? args.map((el: any) => el.value) : []
-        await this.commands.get(interaction.command.name.toLocaleLowerCase()).execute(this, message, newArgs).then((result: string | EmbedMessage | MessageFormatter) => {
-          if (result){
-            if (result instanceof EmbedMessage) {
-              interaction.reply({ embeds: [result] });
-            } else if(result instanceof MessageFormatter){
-              interaction.reply(result.format());
-            } else {
-              interaction.reply(result);
-            }
-          }
-          return;
-        });
-      }else if(interaction.isButton()){
-        interaction.reply("You just clicked on a button !");
-      }else if(interaction.isSelectMenu()){
-        interaction.reply("You just selected a menu !");
-      }
-    })
   }
 
   name(){
@@ -106,6 +44,22 @@ export class Bot extends Client {
   makeSheduledTask(duration: number, callback: () => void | void){
     setInterval(callback, duration * 1000);
   }
+
+  setNewEvent(eventType: EventType, customId: string, callback: (interaction: Interaction) => void){
+    switch(eventType){
+      case EventType.BUTTON_EVENT:
+        this.handler.newButtonEvent(customId, callback);
+        break;
+      case EventType.SELECT_MENU_EVENT:
+        this.handler.newSelectMenuEvent(customId, callback);
+        break;
+    }
+  }
+}
+
+export enum EventType {
+  BUTTON_EVENT = 'BUTTON',
+  SELECT_MENU_EVENT = 'SELECT_MENU'
 }
 
 export type SlashCommandConfig = {enabled: boolean, options: object[] }

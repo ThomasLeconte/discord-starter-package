@@ -99,3 +99,27 @@ result.addEmbedMessage(...)
 
 return result;
 ```
+
+## Message component event handling :
+Imagine that you just added a new button with `my_custom_id` customId property :
+```ts
+// Concider you're on a command file ...
+const result = new MessageFormatter();
+result.addButton("Get karmated", "💥", "DANGER", "karma_button");
+
+return result;
+```
+With the `client` property in your command function `async execute(client: Bot, message: Message, args: any[])`, you can register an event when this new button will be clicked. For example, you want to log the player who clicked on the button. With the `interaction` that you must provide on event declaration, you will be able to get his / her username ! By using `client.setNewEvent()`, you can register an event for a button click or a select menu interaction (for the moment).
+Check this out :
+
+```ts
+// Concider you're on a command file ...
+const result = new MessageFormatter();
+result.addButton("Get karmated", "💥", "DANGER", "karma_button");
+
+client.setNewEvent(EventType.BUTTON_EVENT, "karma_button", (interaction: Interaction) => {
+  console.log(interaction.member.user.username + " has clicked on the main menu button");
+});
+
+return result;
+```
