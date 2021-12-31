@@ -123,3 +123,17 @@ client.setNewEvent(EventType.BUTTON_EVENT, "karma_button", (interaction: Interac
 
 return result;
 ```
+
+## Context menu interaction
+DiscordJS makes able creation of context menu items. I've developed more easily way to create it. You just have to use current client bot instance and call `addContextMenuItem()` function :
+```ts
+//Add context menu item
+client.addContextMenuItem("test", message.guildId);
+```
+And obviously, you can declare an event when this menu item is used :
+```ts
+//Add event triggerer when context menu item is used
+client.setNewEvent(EventType.CONTEXT_MENU_EVENT, "test", (interaction: Interaction) => {
+  console.log(`${interaction.commandName} has been used...`);
+});
+```
