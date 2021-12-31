@@ -2,7 +2,14 @@
 Little package for start a discord bot fastly and easily with TypeScript.  
 **Disclaimer:** This is not the best way, just my favorite way to build a discord bot. You can propose your own ideas with a pull request 😉
 
-## How use it ?
+## Summary
+[How use it ?](#how-use-it)  
+[Commands](#commands)  
+[Messages](#message)  
+[Message component event handling](#message-component-event-handling)  
+[Context menu interaction](#context-menu-interaction)  
+
+## How use it
 First of all, you need to create a `config.json` file on your project root.
 Then, just copy this into your new file :
 ```json
@@ -80,7 +87,7 @@ Just make a new instance of it and look at possibilites :
 
 const result = new MessageFormatter();
 // add an Embed Message ... Pff, to easy :)
-result.addEmbedMessage(EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" hasenabled !`));
+result.addEmbedMessage(EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`));
 
 // add a button ? Dude, I said it was easy to use, trust me !
 result.addButton("Get karmated", "💥", "DANGER", "karma_button");
@@ -100,7 +107,7 @@ result.addEmbedMessage(...)
 return result;
 ```
 
-## Message component event handling :
+## Message component event handling
 Imagine that you just added a new button with `my_custom_id` customId property :
 ```ts
 // Concider you're on a command file ...
