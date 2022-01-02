@@ -4,12 +4,14 @@ import { CommandsRegister } from './Tools/CommandsRegister';
 import EmbedMessage from './Tools/EmbedMessage';
 import { MessageFormatter } from './Tools/MessageFormatter';
 import { InteractionHandler } from './Tools/InteractionHandler';
+import { CacheManager } from './Tools/CacheManager';
 
 export class Bot extends Client {
   commands: Collection<String, any> = new Collection();
   disabledCommands: Collection<String, any> = new Collection();
   config: BotConfig;
   interactionHandler: InteractionHandler;
+  logger: CacheManager;
 
   constructor(config: BotConfig) {
     super(config.options);
@@ -31,6 +33,11 @@ export class Bot extends Client {
     this.interactionHandler = new InteractionHandler(this);
     this.interactionHandler.listen();
     new MessageHandler(this).listen();
+    this.logger = new CacheManager(this);
+  }
+
+  log(content: string){
+    this.logger.addLog(content);
   }
 
   name() {
@@ -107,6 +114,7 @@ export class BotConfig {
   token: string;
   prefix: string;
   slashCommands: SlashCommandConfig;
+  autoLog: boolean;
   options: ClientOptions;
   adminRole: string;
 
@@ -115,6 +123,7 @@ export class BotConfig {
     this.token = config.token;
     this.prefix = config.prefix;
     this.slashCommands = config.slashCommands;
+    this.autoLog = config.autoLog;
     this.options = config.options;
     this.adminRole = config.adminRole;
   }

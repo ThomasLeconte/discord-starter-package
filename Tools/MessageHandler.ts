@@ -4,8 +4,8 @@ import EmbedMessage from "./EmbedMessage";
 import { MessageFormatter } from "./MessageFormatter";
 
 export class MessageHandler {
-  bot: Bot;
-  interactionsEvent: Map<String, (interaction: Interaction) => void>;
+  private bot: Bot;
+  private interactionsEvent: Map<String, (interaction: Interaction) => void>;
 
   constructor(bot: Bot) {
     this.bot = bot;
@@ -34,6 +34,7 @@ export class MessageHandler {
         if (this.bot.commands.has(command)) {
           await this.bot.commands.get(command).execute(this, msg, args).then((result: string | EmbedMessage | MessageFormatter) => {
             if (result) this.bot.sendMessage(msg, result);
+            if(this.bot.config.autoLog) this.bot.log(`${this.bot.commands.get(command).name} command executed by ${msg.author.username} with following args: [${args.join(', ')}]`);
           });
         } else {
           this.bot.sendMessage(msg, EmbedMessage.showError(this.bot, `**${this.bot.name()} - Error**`, `The command "${command}" does not exist.`));

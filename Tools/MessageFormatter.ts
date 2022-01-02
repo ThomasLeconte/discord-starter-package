@@ -2,9 +2,9 @@ import { MessageActionRow, MessageButton, MessageButtonStyle, MessageEmbed, Mess
 
 export type SelectOption = {label: string, description: string, value: string};
 export class MessageFormatter {
-  embeds: any[];
-  content: string;
-  components: MessageActionRow;
+  private embeds: any[];
+  private content: string;
+  private components: MessageActionRow;
 
   constructor(){
     this.components = new MessageActionRow();

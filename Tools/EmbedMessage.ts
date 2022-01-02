@@ -2,7 +2,7 @@ import { MessageEmbed } from 'discord.js'
 import { Bot } from '../Bot'
 
 export default class EmbedMessage extends MessageEmbed {
-  client: Bot
+  private client: Bot
   constructor(client: Bot, args: any) {
     super();
     this.client = client;
