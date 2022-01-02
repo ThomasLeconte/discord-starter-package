@@ -8,6 +8,7 @@ Little package for start a discord bot fastly and easily with TypeScript.
 [Messages](#message)  
 [Message component event handling](#message-component-event-handling)  
 [Context menu interaction](#context-menu-interaction)  
+[Log](#log)
 
 ## How use it
 First of all, you need to create a `config.json` file on your project root.
@@ -21,6 +22,7 @@ Then, just copy this into your new file :
       "token": "YourBotPrivateToken",
       "prefix": "/",
       "slashCommands": false,
+      "autoLog": false,
       "adminRole": "admin",
       "options": {
         "intents": [
@@ -35,6 +37,7 @@ Then, just copy this into your new file :
       "token": "YourBotPrivateToken",
       "prefix": "/",
       "slashCommands": false,
+      "autoLog": false,
       "adminRole": "admin",
       "options": {
         "intents": [
@@ -53,6 +56,7 @@ Now, have a look to all properties of an environment :
 - `token`: Your bot private token
 - `prefix`: Your bot prefix which be used at start of all your commands (when slash command option is not enabled on command)
 - `slashCommands`: Precise if you want to use Slash Commands system on all your commands.
+- `autoLog`: Define if you want automatic logs when commands are executed for see command name, player and arguments provided.
 - `adminRole`: Admin role name who's needed to admin commands. User will need to have a role with this name to allow execution.
 - `options`: Options that you want to add on your bot. This property is just a copy of `Discord.CLientOptions` class.
 
@@ -144,3 +148,7 @@ client.setNewEvent(EventType.CONTEXT_MENU_EVENT, "test", (interaction: Interacti
   console.log(`${interaction.commandName} has been used...`);
 });
 ```
+
+## Log
+By default, all environments have `autoLog` property on `false` value. But if you enable this property by changing it value to `true`, when a command (slash or not) will be executed, it will automatically log execution date, username, command name and command arguments.
+You can log by yourself if you want, just use `client.log('YourContent')` 😉

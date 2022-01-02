@@ -4,9 +4,9 @@ import EmbedMessage from "./EmbedMessage";
 import { MessageFormatter } from "./MessageFormatter";
 
 export class InteractionHandler {
-  bot: Bot;
-  interactionsEvent: Map<String, (interaction: Interaction) => void>;
-  contextMenuEvent: Map<String, (interaction: Interaction) => void>;
+  private bot: Bot;
+  private interactionsEvent: Map<String, (interaction: Interaction) => void>;
+  private contextMenuEvent: Map<String, (interaction: Interaction) => void>;
 
   constructor(bot: Bot) {
     this.bot = bot;
@@ -46,7 +46,7 @@ export class InteractionHandler {
         const args = (interaction.options as any)._hoistedOptions
         const channel = this.bot.channels.cache.find(c => c.id == interaction.channelId)
         const guild = this.bot.guilds.cache.get(interaction.guildId)
-        let message = null
+        let message: any = null
         await guild.members.fetch().then(members => {
           let member = members.get(interaction.member.user.id)
           if (args != undefined && args.find((a: any) => a.type == "USER") != null) {
@@ -75,6 +75,7 @@ export class InteractionHandler {
               interaction.reply(result);
             }
           }
+          if (this.bot.config.autoLog) this.bot.log(`${interaction.command.name} command executed by ${message.author.username} with following args: [${newArgs.join(', ')}]`);
           return;
         });
       } else if (interaction.isButton() || interaction.isSelectMenu()) {
