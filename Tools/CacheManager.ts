@@ -1,15 +1,15 @@
 import { Bot } from "../Bot";
 import * as fs from "fs";
 
-export class CacheManager{
+export class CacheManager {
   private bot: Bot;
 
-  constructor(bot: Bot){
+  constructor(bot: Bot) {
     this.bot = bot;
   }
 
-  addLog(content: string){
+  addLog(content: string, prefix: string = null) {
     fs.existsSync('./logs') || fs.mkdirSync('./logs');
-    fs.appendFileSync('./logs/log.txt', `${new Date().toLocaleString()} - ${content}\n`);
+    fs.appendFileSync('./logs/log.txt', `${prefix != null ? "[" + prefix + "] #" : new Date().toLocaleString()} - ${content}\n`);
   }
 }

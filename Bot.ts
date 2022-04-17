@@ -36,8 +36,8 @@ export class Bot extends Client {
     this.logger = new CacheManager(this);
   }
 
-  log(content: string){
-    this.logger.addLog(content);
+  log(content: string, prefix: string = null) {
+    this.logger.addLog(content, prefix);
   }
 
   name() {
