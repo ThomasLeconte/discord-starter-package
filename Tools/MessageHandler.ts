@@ -32,7 +32,7 @@ export class MessageHandler {
         this.bot.sendMessage(msg, EmbedMessage.showError(this.bot, `**${this.bot.name()} - Error**`, `The command "${command}" is disabled !`));
       } else {
         if (this.bot.commands.has(command)) {
-          await this.bot.commands.get(command).execute(this, msg, args).then((result: string | EmbedMessage | MessageFormatter) => {
+          await this.bot.commands.get(command).execute(this.bot, msg, args).then((result: string | EmbedMessage | MessageFormatter) => {
             if (result) this.bot.sendMessage(msg, result);
             if(this.bot.config.autoLog) this.bot.log(`${this.bot.commands.get(command).name} command executed by ${msg.author.username} with following args: [${args.join(', ')}]`);
           });
