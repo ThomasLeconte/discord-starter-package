@@ -155,4 +155,4 @@ client.setNewEvent(EventType.CONTEXT_MENU_EVENT, "test", (interaction: Interacti
 
 ## Log
 By default, all environments have `autoLog` property on `false` value. But if you enable this property by changing it value to `true`, when a command (slash or not) will be executed, it will automatically log execution date, username, command name and command arguments.
-You can log by yourself if you want, just use `client.log('YourContent')` 😉
+You can log by yourself if you want, just use `client.log('YourContent')` 😉 UWhen you log something, log is prefixed by default with current date. But you can personalize prefix by using `client.log('YourContent', 'YourPrefix')`
