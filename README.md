@@ -175,10 +175,26 @@ You can define all webhooks that you want to use with your bot. For do this, you
 ```
 Then you can call your webhook with your bot client by the function `getWebhook(webhookName)`, inside one of your commands for example :
 ```ts
+import { Message } from "discord.js";
+import { Bot } from "../Bot";
+import EmbedMessage from "../Tools/EmbedMessage";
+
+module.exports = {
+  name: '',
+  description: '',
+  usage: '',
+  slashCommand: {
+    enabled: false,
+    options: []
+  },
+  admin: false,
+  alias: [],
+
   async execute(client: Bot, message: Message, args: string[]) {
     client.getWebHook("tata").send("Hi")
     ...
   }
+}
 ```
 Errors are catched if webhook is not registered and reply with an error embed message to user, and also log error in your console.
 
