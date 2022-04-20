@@ -30,10 +30,13 @@ export class MessageFormatter {
     return this;
   }
 
-  addSelectMenu(placeholder: string, options: SelectOption[], customId: string): this {
-    this.components.addComponents(new MessageSelectMenu()
+  addSelectMenu(options: SelectOption[], customId: string, placeholder: string = null): this {
+    const button = new MessageSelectMenu()
       .setOptions(options)
-      .setCustomId(customId)
+      .setCustomId(customId);
+    if(placeholder) button.setPlaceholder(placeholder) 
+    this.components.addComponents(
+      button
     );
     return this;
   }
