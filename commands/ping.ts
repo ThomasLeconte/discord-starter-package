@@ -12,6 +12,7 @@ module.exports = {
   admin: false,
 
   async execute(client: Bot, message: Message, args: string[]) {
+    client.getWebHook("tata").send("Hi")
     return `${new Date().toLocaleString()} - :ping_pong: Pong !`;
   }
 }

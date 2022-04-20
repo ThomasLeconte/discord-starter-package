@@ -22,7 +22,7 @@ export class CommandsRegister {
         type: "CHAT_INPUT",
         defaultPermission: true
       }, guild.id).then(() => {
-        console.log(`"${command.name}" slash command registered in "${guild.name}" guild.`);
+        console.log(`# "${command.name}" slash command registered in "${guild.name}" guild.`);
       });
     });
   }
