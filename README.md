@@ -8,6 +8,7 @@ Little package for start a discord bot fastly and easily with TypeScript.
 [Messages](#message)  
 [Message component event handling](#message-component-event-handling)  
 [Context menu interaction](#context-menu-interaction)  
+[Webhooks](#webhooks)  
 [Log](#log)
 
 ## How use it
@@ -34,7 +35,8 @@ Then, just copy this into your new file :
           "GUILD_MEMBERS",
           "GUILD_MESSAGES"
         ]
-      }
+      },
+      "webhooks": []
     },
     "PROD": {
       "name": "YourBotName",
@@ -49,7 +51,8 @@ Then, just copy this into your new file :
           "GUILD_MEMBERS",
           "GUILD_MESSAGES"
         ]
-      }
+      },
+      "webhooks": []
     }
   }
 }
@@ -63,6 +66,7 @@ Now, have a look to all properties of an environment :
 - `autoLog`: Define if you want automatic logs when commands are executed for see command name, player and arguments provided.
 - `adminRole`: Admin role name who's needed to admin commands. User will need to have a role with this name to allow execution.
 - `options`: Options that you want to add on your bot. This property is just a copy of `Discord.CLientOptions` class.
+- `webhooks`: List of webhooks that you want to use in your code.
 
 ## Commands
 Your commands must follow a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command and aliases should be like that :
@@ -153,6 +157,32 @@ client.setNewEvent(EventType.CONTEXT_MENU_EVENT, "test", (interaction: Interacti
 });
 ```
 
+## Webhooks
+You can define all webhooks that you want to use with your bot. For do this, you just have to declare them inside `webhooks` property in environment that you're using.
+```json
+{
+  "env": "DEV",
+  "environments": {
+    "DEV": {
+      ...
+      "webhooks": [
+        { "name": "myWebHook", "url": "https://discordapp.com/api/webhooks/id/token" }
+      ]
+    },
+    ...
+  }
+}
+```
+Then you can call your webhook with your bot client by the function `getWebhook(webhookName)`, inside one of your commands for example :
+```ts
+  async execute(client: Bot, message: Message, args: string[]) {
+    client.getWebHook("tata").send("Hi")
+    ...
+  }
+```
+Errors are catched if webhook is not registered and reply with an error embed message to user, and also log error in your console.
+
 ## Log
 By default, all environments have `autoLog` property on `false` value. But if you enable this property by changing it value to `true`, when a command (slash or not) will be executed, it will automatically log execution date, username, command name and command arguments.
 You can log by yourself if you want, just use `client.log('YourContent')` 😉 UWhen you log something, log is prefixed by default with current date. But you can personalize prefix by using `client.log('YourContent', 'YourPrefix')`
+

@@ -1,4 +1,4 @@
-import { Client, Collection, ClientOptions, Message, ApplicationCommand, Interaction } from 'discord.js';
+import { Client, Collection, ClientOptions, Message, ApplicationCommand, Interaction, WebhookClient } from 'discord.js';
 import { MessageHandler } from './Tools/MessageHandler';
 import { CommandsRegister } from './Tools/CommandsRegister';
 import EmbedMessage from './Tools/EmbedMessage';
@@ -12,6 +12,7 @@ export class Bot extends Client {
   config: BotConfig;
   interactionHandler: InteractionHandler;
   logger: CacheManager;
+  webhooks: Collection<String, WebhookClient> = new Collection();
 
   constructor(config: BotConfig) {
     super(config.options);
@@ -34,6 +35,23 @@ export class Bot extends Client {
     this.interactionHandler.listen();
     new MessageHandler(this).listen();
     this.logger = new CacheManager(this);
+    if(this.config.webhooks.length > 0){
+      this.initWebHooks();
+    }
+  }
+
+  initWebHooks(){
+    console.log("# - - - - WEBHOOK - - - - #")
+    for (const wh of this.config.webhooks){
+      const urlSplitted = wh.url.split("/")
+      const client = new WebhookClient({
+        id: urlSplitted[urlSplitted.length - 2],
+        token: urlSplitted[urlSplitted.length - 1]
+      })
+      this.webhooks.set(wh.name, client)
+      console.log(`# "${wh.name}" WebHook has been successfully initialized !`)
+    }
+    console.log("# - - - - WEBHOOK - - - - #")
   }
 
   log(content: string, prefix: string = null) {
@@ -42,6 +60,18 @@ export class Bot extends Client {
 
   name() {
     return this.config.name;
+  }
+
+  getWebHook(name: string): WebhookClient{
+    if(this.webhooks.size > 0){
+      if(this.webhooks.has(name)){
+        return this.webhooks.get(name)
+      }else{
+        throw Error(`"${name}" Webhook does not exists in your current environment config !`)
+      }
+    }else{
+      throw Error("Webhooks of you current environment is empty !")
+    }
   }
 
   /**
@@ -109,7 +139,8 @@ export enum EventType {
 }
 
 export type SlashCommandConfig = { enabled: boolean, options: object[] }
-export class BotConfig {
+export type WebHookConfig = { name: string, url: string }
+class BotConfig {
   name: string;
   token: string;
   prefix: string;
@@ -117,6 +148,7 @@ export class BotConfig {
   autoLog: boolean;
   options: ClientOptions;
   adminRole: string;
+  webhooks: WebHookConfig[]
 
   constructor(config: any) {
     this.name = config.name;
@@ -126,6 +158,7 @@ export class BotConfig {
     this.autoLog = config.autoLog;
     this.options = config.options;
     this.adminRole = config.adminRole;
+    this.webhooks = config.webhooks;
   }
 }
 
