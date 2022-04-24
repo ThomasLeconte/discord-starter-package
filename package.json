@@ -4,6 +4,7 @@
   "description": "Discord bot for find mates on different games",
   "main": "main.js",
   "scripts": {
+    "bot": "ts-node main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ThomasLeconte",

@@ -2,15 +2,21 @@ import { Bot, Command, SlashCommandConfig } from "../Bot";
 import * as fs from "fs";
 
 export class CommandsRegister {
-  static registerCommands(bot: Bot) {
+  static async registerCommands(bot: Bot) {
     const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.ts'))
+    const commandsInitialized = []
     for (const file of commandFiles) {
       const command: Command = new Command(require(`../commands/${file}`));
       bot.commands.set(command.name.toLowerCase(), command);
       if(bot.config.slashCommands || (command.slashCommand as unknown as SlashCommandConfig).enabled){
         CommandsRegister.registerSlashCommand(bot, command);
       }
+      commandsInitialized.push({ name: command.name, slash: (command.slashCommand as unknown as SlashCommandConfig).enabled})
     }
+    console.log("# - - - - COMMANDS - - - - #")
+    console.log(`# Slash commands : ${commandsInitialized.filter(c => c.slash).map(c => c.name).join(", ")}`)
+    console.log(`# Basic commands : ${commandsInitialized.filter(c => !c.slash).map(c => c.name).join(", ")}`)
+    console.log("# - - - - COMMANDS - - - - #\n")
   }
 
   static registerSlashCommand(bot: Bot, command: Command){
@@ -21,9 +27,7 @@ export class CommandsRegister {
         options: (command.slashCommand as any).options,
         type: "CHAT_INPUT",
         defaultPermission: true
-      }, guild.id).then(() => {
-        console.log(`# "${command.name}" slash command registered in "${guild.name}" guild.`);
-      });
+      }, guild.id);
     });
   }
 }

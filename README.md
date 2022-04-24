@@ -13,10 +13,9 @@ Little package for start a discord bot fastly and easily with TypeScript.
 
 ## How use it
 
-**Because this bot working with Typescript, you need to install Typescript and TS-Node for compilation :  
-`npm install -g typescript ts-node`**
+**First of all, run `npm install` to add discordjs and typescript packages on your project**.
 
-First of all, you need to create a `config.json` file on your project root.
+Then, you **must** create a `config.json` file on your project root.
 Then, just copy this into your new file :
 ```json
 {
@@ -110,11 +109,15 @@ result.addSelectMenu("When you will download my project ?", [
   { label: "NEVER YOU SUCK !", description: "Dude, go back learn HTML", value: "never" }
 ], "download_menu");
 
+// add attachment file
+result.addFile("myPicture.png")
+
 // All at same time ? Why not
 result.addEmbedMessage(...)
   .addButton(...)
   .addSelectMenu(...)
   .setContent(...)
+  ...
 
 return result;
 ```

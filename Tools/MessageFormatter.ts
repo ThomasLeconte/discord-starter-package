@@ -5,10 +5,16 @@ export class MessageFormatter {
   private embeds: any[];
   private content: string;
   private components: MessageActionRow;
+  private files: string[];
 
   constructor(){
     this.components = new MessageActionRow();
     this.embeds = [];
+  }
+
+  addContent(content: string){
+    this.content += content
+    return this;
   }
 
   setContent(content: string){
@@ -41,11 +47,17 @@ export class MessageFormatter {
     return this;
   }
 
+  addFile(path: string) {
+    this.files.push(path)
+    return this;
+  }
+
   format(): any {
     let finalResult: any = {}
     if (this.embeds.length > 0) finalResult.embeds = this.embeds;
     if (this.components.components.length > 0) finalResult.components = [this.components];
     if (this.content != undefined) finalResult.content = this.content;
+    if(this.files.length > 0) finalResult.files = this.files;
     return finalResult;
   }
 }
