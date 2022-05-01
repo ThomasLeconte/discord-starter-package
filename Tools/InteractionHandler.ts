@@ -78,7 +78,7 @@ export class InteractionHandler {
           if (this.bot.config.autoLog) this.bot.log(`${interaction.command.name} command executed by ${message.author.username} with following args: [${newArgs.join(', ')}]`);
           return;
         }).catch((err: Error) => {
-          console.error(`An error has occured : ${err.message}`)
+          console.error(`An error has occured : ${err.message}\n${err.stack}`)
           interaction.reply({embeds: [
             EmbedMessage.showError(this.bot, `**${this.bot.name()} - Error**`, "An error has occured with this command. Please try again later ...")
           ]})

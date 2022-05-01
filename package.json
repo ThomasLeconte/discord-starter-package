@@ -4,6 +4,7 @@
   "description": "Discord bot for find mates on different games",
   "main": "main.js",
   "scripts": {
+    "bot": "ts-node main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ThomasLeconte",
@@ -13,7 +14,6 @@
     "fs": "^0.0.1-security"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   }
