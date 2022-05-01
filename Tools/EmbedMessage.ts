@@ -1,9 +1,15 @@
-import { MessageEmbed } from 'discord.js'
+import { ColorResolvable, MessageEmbed } from 'discord.js'
 import { Bot } from '../Bot'
+
+export type EmbedProperties = {
+  title?: string, titleLink?: string, description?: string, content?: EmbedContent[],
+  thumbnail?: boolean, color?: ColorResolvable, image?: string, author?: string
+}
+export type EmbedContent = { name: string, content: string }
 
 export default class EmbedMessage extends MessageEmbed {
   private client: Bot
-  constructor(client: Bot, args: any) {
+  constructor(client: Bot, args: EmbedProperties, autoPaginate: boolean = false) {
     super();
     this.client = client;
     if (args != null) {
@@ -35,7 +41,7 @@ export default class EmbedMessage extends MessageEmbed {
       }
     } else {
       this.setTitle("⛔ Error");
-      this.setDescription("An error has occurred. Please contact bot administrator.");
+      this.setDescription("An error has occurred during Embed Message generation. Please contact bot administrator.");
     }
 
     this.setTimestamp()

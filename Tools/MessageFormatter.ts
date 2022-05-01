@@ -2,7 +2,7 @@ import { MessageActionRow, MessageButton, MessageButtonStyle, MessageEmbed, Mess
 
 export type SelectOption = {label: string, description: string, value: string};
 export class MessageFormatter {
-  private embeds: any[];
+  private embeds: MessageEmbed[];
   private content: string;
   private components: MessageActionRow;
   private files: string[];
@@ -10,6 +10,7 @@ export class MessageFormatter {
   constructor(){
     this.components = new MessageActionRow();
     this.embeds = [];
+    this.files = [];
   }
 
   addContent(content: string){
@@ -27,12 +28,13 @@ export class MessageFormatter {
     return this;
   }
 
-  addButton(label: string, emoji: string, style: MessageButtonStyle, customId: string): this {
+  addButton(label: string, emoji: string, style: MessageButtonStyle, customId: string, disabled: boolean = false): this {
     this.components.addComponents(new MessageButton()
       .setLabel(label)
       .setEmoji(emoji)
       .setStyle(style)
-      .setCustomId(customId));
+      .setCustomId(customId)
+      .setDisabled(disabled));
     return this;
   }
 
@@ -57,7 +59,7 @@ export class MessageFormatter {
     if (this.embeds.length > 0) finalResult.embeds = this.embeds;
     if (this.components.components.length > 0) finalResult.components = [this.components];
     if (this.content != undefined) finalResult.content = this.content;
-    if(this.files.length > 0) finalResult.files = this.files;
+    if (this.files.length > 0) finalResult.files = this.files;
     return finalResult;
   }
 }

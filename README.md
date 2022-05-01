@@ -6,6 +6,7 @@ Little package for start a discord bot fastly and easily with TypeScript.
 [How use it ?](#how-use-it)  
 [Commands](#commands)  
 [Messages](#message)  
+[Embed pagination](#embeds-pagination)  
 [Message component event handling](#message-component-event-handling)  
 [Context menu interaction](#context-menu-interaction)  
 [Webhooks](#webhooks)  
@@ -121,6 +122,23 @@ result.addEmbedMessage(...)
 
 return result;
 ```
+
+## Embeds pagination
+Sometimes, a pagination should be great to not spam your channel. With Discord.JS v13 and Embeds components, user experience is so much better, and developers can make embeds pagination more cleaner ! So I made a tool for it : EmbedPaginator. It generate an embed with options provided in constructor, handle automatically buttons events and it shows the range of items corresponding to the current page.
+You can personnalize your embed with available options of `EmbedMessage`, and personnalize skin of your previous / next button.
+```ts
+// Concider you're on a command file ...
+const content: EmbedContent[] = []
+for (let i = 0; i < 30; i++) {
+  content.push({ name: "name-" + i, content: "value-" + i })
+}
+
+// EmbedPaginator(client, message, content to show in embed, embed options, paginator options)
+new EmbedPaginator(client, message, content, { title: "Items" }, { itemsPerPage: 10, nextLabel: "Next page", previousLabel: "Previous page" })
+```
+Pagination options are optionals. By default, there is 10 items per page, and pagination buttons looking like that :  
+![Pagination default buttons](https://cdn.discordapp.com/attachments/784412126763548683/970297665134923796/unknown.png)
+
 
 ## Message component event handling
 Imagine that you just added a new button with `my_custom_id` customId property :

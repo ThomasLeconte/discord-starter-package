@@ -36,7 +36,7 @@ export class MessageHandler {
             if (result) this.bot.sendMessage(msg, result);
             if(this.bot.config.autoLog) this.bot.log(`${this.bot.commands.get(command).name} command executed by ${msg.author.username} with following args: [${args.join(', ')}]`);
           }).catch((err: Error) => {
-            console.error(`An error has occured : ${err.message}`)
+            console.error(`An error has occured : ${err.message}\n${err.stack}`)
             this.bot.sendMessage(msg, EmbedMessage.showError(this.bot, `**${this.bot.name()} - Error**`, "An error has occured with this command. Please try again later ..."))
           });
         } else {
