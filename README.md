@@ -56,6 +56,8 @@ Now, have a look to all properties of an environment :
 - `options`: Options that you want to add on your bot. This property is just a copy of `Discord.CLientOptions` class.
 - `webhooks`: List of webhooks that you want to use in your code.
 
+Finally, you can launch your discord bot with following command : `npm run bot`.
+
 ## Commands
 Your commands must follow a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command and aliases should be like that :
 ```ts
