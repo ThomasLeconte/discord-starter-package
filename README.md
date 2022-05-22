@@ -7,10 +7,10 @@ Little package for start a discord bot fastly and easily with TypeScript.
 [Commands](#commands)  
 [Messages](#message)  
 [Embed pagination (**NEW**)](#embeds-pagination)  
-[Modal Builder (**NEW**)](#modal-builder)
+[Modal Builder (**NEW**)](#modal-builder)  
 [Message component event handling](#message-component-event-handling)  
 [Context menu interaction](#context-menu-interaction)  
-[Webhooks](#webhooks)
+[Webhooks](#webhooks)  
 [Log](#log)
 
 ## How use it
