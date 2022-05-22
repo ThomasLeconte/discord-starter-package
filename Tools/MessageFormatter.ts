@@ -28,17 +28,19 @@ export class MessageFormatter {
     return this;
   }
 
-  addButton(label: string, emoji: string, style: MessageButtonStyle, customId: string, disabled: boolean = false): this {
-    this.components.addComponents(new MessageButton()
+  addButton(label: string, emoji: string, style: MessageButtonStyle, customId: string, disabled: boolean = false, url: string | null = null): this {
+    const button = new MessageButton()
       .setLabel(label)
       .setEmoji(emoji)
       .setStyle(style)
       .setCustomId(customId)
-      .setDisabled(disabled));
+      .setDisabled(disabled);
+    if(url) button.setURL(url)
+    this.components.addComponents(button);
     return this;
   }
 
-  addSelectMenu(options: SelectOption[], customId: string, placeholder: string = null): this {
+  addSelectMenu(options: SelectOption[], customId: string, placeholder: string | null = null): this {
     const button = new MessageSelectMenu()
       .setOptions(options)
       .setCustomId(customId);

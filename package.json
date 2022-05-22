@@ -1,7 +1,7 @@
 {
   "name": "discordtemplatebot",
   "version": "1.0.1",
-  "description": "Discord bot for find mates on different games",
+  "description": "Discord bot template",
   "main": "main.js",
   "scripts": {
     "bot": "ts-node main.ts",
@@ -10,7 +10,7 @@
   "author": "ThomasLeconte",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^13.4.0",
+    "discord.js": "^13.7.0",
     "fs": "^0.0.1-security"
   },
   "devDependencies": {

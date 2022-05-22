@@ -1,4 +1,4 @@
-import { Client, Collection, ClientOptions, Message, ApplicationCommand, Interaction, WebhookClient } from 'discord.js';
+import { Client, Collection, ClientOptions, Message, Interaction, WebhookClient } from 'discord.js';
 import { MessageHandler } from './Tools/MessageHandler';
 import { CommandsRegister } from './Tools/CommandsRegister';
 import EmbedMessage from './Tools/EmbedMessage';
@@ -19,7 +19,7 @@ export class Bot extends Client {
     this.config = config;
     this.login().then(() => {
       this.initializeTools();
-    }).catch(err => {
+    }).catch((err: Error) => {
       console.error(err);
       this.destroy();
     });
@@ -54,7 +54,7 @@ export class Bot extends Client {
     console.log("# - - - - WEBHOOK - - - - #")
   }
 
-  log(content: string, prefix: string = null) {
+  log(content: string, prefix: string | null = null) {
     this.logger.addLog(content, prefix);
   }
 
@@ -79,7 +79,7 @@ export class Bot extends Client {
    * @param name name of the command
    * @param guildId OPTIONNAL - if provided, the command will be executed only in this guild, otherwise it will be executed in all guilds
    */
-  addContextMenuItem(name: string, guildId: string = null) {
+  addContextMenuItem(name: string, guildId: string | null = null) {
     if (guildId != null) {
       this.application.commands.create({
         name,
@@ -128,6 +128,10 @@ export class Bot extends Client {
         break;
       case EventType.CONTEXT_MENU_EVENT:
         this.interactionHandler.newContextMenuEvent(key, callback);
+        break;
+      case EventType.MODAL_SUBMIT_EVENT:
+        this.interactionHandler.newModalEvent(key, callback);
+        break;
     }
   }
 }
@@ -135,7 +139,8 @@ export class Bot extends Client {
 export enum EventType {
   BUTTON_EVENT = 'BUTTON',
   SELECT_MENU_EVENT = 'SELECT_MENU',
-  CONTEXT_MENU_EVENT = 'CONTEXT_MENU'
+  CONTEXT_MENU_EVENT = 'CONTEXT_MENU',
+  MODAL_SUBMIT_EVENT = 'MODAL_SUBMIT'
 }
 
 export type SlashCommandConfig = { enabled: boolean, options: object[] }
