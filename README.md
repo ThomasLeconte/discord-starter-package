@@ -6,7 +6,8 @@ Little package for start a discord bot fastly and easily with TypeScript.
 [How use it ?](#how-use-it)  
 [Commands](#commands)  
 [Messages](#message)  
-[Embed pagination](#embeds-pagination)  
+[Embed pagination (**NEW**)](#embeds-pagination)  
+[Modal Builder (**NEW**)](#modal-builder)  
 [Message component event handling](#message-component-event-handling)  
 [Context menu interaction](#context-menu-interaction)  
 [Webhooks](#webhooks)  
@@ -39,20 +40,7 @@ Then, just copy this into your new file :
       "webhooks": []
     },
     "PROD": {
-      "name": "YourBotName",
-      "token": "YourBotPrivateToken",
-      "prefix": "/",
-      "slashCommands": false,
-      "autoLog": false,
-      "adminRole": "admin",
-      "options": {
-        "intents": [
-          "GUILDS",
-          "GUILD_MEMBERS",
-          "GUILD_MESSAGES"
-        ]
-      },
-      "webhooks": []
+      ...
     }
   }
 }
@@ -139,7 +127,6 @@ new EmbedPaginator(client, message, content, { title: "Items" }, { itemsPerPage:
 Pagination options are optionals. By default, there is 10 items per page, and pagination buttons looking like that :  
 ![Pagination default buttons](https://cdn.discordapp.com/attachments/784412126763548683/970297665134923796/unknown.png)
 
-
 ## Message component event handling
 Imagine that you just added a new button with `my_custom_id` customId property :
 ```ts
@@ -163,6 +150,28 @@ client.setNewEvent(EventType.BUTTON_EVENT, "karma_button", (interaction: Interac
 
 return result;
 ```
+
+## Modal Builder
+Discord v13 just released first version of Modals. You can create fast instance of them with `ModalBuilder` : 
+> Warning : Modals can be showed only after an interaction of any type (button click, slash command, etc ..)
+```ts
+// Concider you're on a command file ...
+const modal = new ModalBuilder("My modal title", "my_modal_custom_id");
+//Add text input or textarea
+modal.addTextInput("My Input label", "my_input_custom_id", false) //textInput
+modal.addTextInput("My Textarea label", "my_textarea_custom_id", true) //textarea
+```
+
+Like Embed components, you can handle interaction of modal submission like this :
+```ts
+client.setNewEvent(EventType.MODAL_SUBMIT_EVENT, modal.getCustomId(), (interaction: Interaction) => {
+  if(interaction.isModalSubmit()){
+    console.log(`${interaction.customId} modal has been submitted...`);
+  }
+});
+```
+
+For more informations about modal, [check this out](https://discordjs.guide/interactions/modals.html#building-and-responding-with-modals).
 
 ## Context menu interaction
 DiscordJS makes able creation of context menu items. I've developed more easily way to create it. You just have to use current client bot instance and call `addContextMenuItem()` function :

@@ -6,7 +6,7 @@ import { MessageFormatter } from "./MessageFormatter";
 export type PaginationOption = { itemsPerPage?: number, previousIcon?: string, nextIcon?: string, previousLabel?: string, nextLabel?: string }
 export default class EmbedPaginator {
 
-  constructor(client: Bot, msg: Message, content: EmbedContent[], embedOptions: EmbedProperties, paginationOptions?: PaginationOption){
+  constructor(client: Bot, msg: Message, content: EmbedContent[], embedOptions: EmbedProperties, paginationOptions?: PaginationOption) {
 
     const previousLabel = paginationOptions?.previousLabel || "Previous";
     const previousIcon = paginationOptions?.previousIcon || "⏮️";
@@ -33,12 +33,12 @@ export default class EmbedPaginator {
       .addButton(nextLabel, nextIcon, "PRIMARY", nextID)
       .format()
     ).then((message) => {
-      const collector = message.createMessageComponentCollector({time: 9999999, componentType: "BUTTON"})
+      const collector = message.createMessageComponentCollector({ time: 9999999, componentType: "BUTTON" })
       collector.on('collect', (interaction) => {
-        
-        if(interaction.user.id == msg.author.id){
-          if(interaction.customId == previousID) page--;
-          if(interaction.customId == nextID) page++;
+
+        if (interaction.user.id == msg.author.id) {
+          if (interaction.customId == previousID) page--;
+          if (interaction.customId == nextID) page++;
 
           const startIndex = page == 1 ? 0 : (page * itemsPerPage) - itemsPerPage
           const endIndex = page * itemsPerPage
@@ -48,13 +48,13 @@ export default class EmbedPaginator {
 
           if (interaction.customId == previousID) {
             interaction.update(new MessageFormatter()
-              .addEmbedMessage(new EmbedMessage(client, { title: embedOptions.title + page, content: chunk }))
+              .addEmbedMessage(new EmbedMessage(client, { title: (embedOptions.title ? embedOptions.title : "Page ") + page, content: chunk }))
               .addButton(previousLabel, previousIcon, "PRIMARY", previousID, page == 1)
               .addButton(nextLabel, nextIcon, "PRIMARY", nextID)
               .format())
           } else if (interaction.customId == nextID) {
             interaction.update(new MessageFormatter()
-              .addEmbedMessage(new EmbedMessage(client, { title: embedOptions.title + page, content: chunk }))
+              .addEmbedMessage(new EmbedMessage(client, { title: (embedOptions.title ? embedOptions.title : "Page ") + page, content: chunk }))
               .addButton(previousLabel, previousIcon, "PRIMARY", previousID)
               .addButton(nextLabel, nextIcon, "PRIMARY", nextID, endIndex >= content.length)
               .format())

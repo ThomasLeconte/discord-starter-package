@@ -8,7 +8,7 @@ export class CacheManager {
     this.bot = bot;
   }
 
-  addLog(content: string, prefix: string = null) {
+  addLog(content: string, prefix: string | null = null) {
     fs.existsSync('./logs') || fs.mkdirSync('./logs');
     fs.appendFileSync('./logs/log.txt', `${prefix != null ? "[" + prefix + "] #" : new Date().toLocaleString()} - ${content}\n`);
   }

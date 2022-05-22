@@ -40,6 +40,10 @@ export class InteractionHandler {
     this.contextMenuEvent.set(contextMenuName, (interaction) => callback(interaction));
   }
 
+  newModalEvent(modalCustomId: string, callback: (interaction: Interaction) => void) {
+    this.interactionsEvent.set(modalCustomId, (interaction) => callback(interaction));
+  }
+
   listen(){
     this.bot.on('interactionCreate', async interaction => {
       if (interaction.isApplicationCommand() && !interaction.isUserContextMenu()) {
@@ -83,7 +87,7 @@ export class InteractionHandler {
             EmbedMessage.showError(this.bot, `**${this.bot.name()} - Error**`, "An error has occured with this command. Please try again later ...")
           ]})
         });
-      } else if (interaction.isButton() || interaction.isSelectMenu()) {
+      } else if (interaction.isButton() || interaction.isSelectMenu() || interaction.isModalSubmit()) {
         if (this.interactionsEvent.has(interaction.customId)) {
           this.interactionsEvent.get(interaction.customId)(interaction);
         }
