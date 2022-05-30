@@ -1,4 +1,4 @@
-import { Interaction } from "discord.js";
+import { Interaction, Modal } from "discord.js";
 import { Bot } from "../Bot";
 import EmbedMessage from "./EmbedMessage";
 import { MessageFormatter } from "./MessageFormatter";
@@ -69,12 +69,14 @@ export class InteractionHandler {
         }).catch(err => console.error(err));
 
         const newArgs = args != undefined ? args.map((el: any) => el.value) : []
-        await this.bot.commands.get(interaction.command.name.toLocaleLowerCase()).execute(this.bot, message, newArgs).then((result: string | EmbedMessage | MessageFormatter) => {
+        await this.bot.commands.get(interaction.command.name.toLocaleLowerCase()).execute(this.bot, message, newArgs).then((result: string | EmbedMessage | MessageFormatter | Modal) => {
           if (result) {
             if (result instanceof EmbedMessage) {
               interaction.reply({ embeds: [result] });
             } else if (result instanceof MessageFormatter) {
               interaction.reply(result.format());
+            } else if(result instanceof Modal) {
+              interaction.showModal(result);
             } else {
               interaction.reply(result);
             }

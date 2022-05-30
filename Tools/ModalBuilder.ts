@@ -1,4 +1,4 @@
-import { Modal, TextInputComponent, TextInputStyleResolvable, MessageActionRow, ModalActionRowComponent } from "discord.js";
+import { Modal, TextInputComponent, TextInputStyleResolvable, MessageActionRow, ModalActionRowComponent, TextInputComponentOptions } from "discord.js";
 
 export default class Builder extends Modal {
 
@@ -8,8 +8,8 @@ export default class Builder extends Modal {
     this.setCustomId(customId);
   }
 
-  addTextInput(label: string, customId: string, textarea: boolean) {
-    const textInput = new TextInputComponent().setLabel(label).setCustomId(customId).setStyle(textarea ? "PARAGRAPH" : "SHORT");
+  addTextInput(options: TextInputComponentOptions, textarea: boolean) {
+    const textInput = new TextInputComponent(options).setStyle(textarea ? "PARAGRAPH" : "SHORT");
     const row = new MessageActionRow<ModalActionRowComponent>().addComponents(textInput);
     this.addComponents(row);
     return this;

@@ -38,6 +38,10 @@ export class Bot extends Client {
     if(this.config.webhooks.length > 0){
       this.initWebHooks();
     }
+    console.log("\x1b[35m", "# - - - - BOT - - - - #")
+    const inviteURL = "https://discord.com/api/oauth2/authorize?client_id="+this.user.id+"&permissions=0&scope=bot%20applications.commands";
+    console.log("# Invitation link : " + inviteURL);
+    console.log("# - - - - BOT - - - - #", "\x1b[0m")
   }
 
   initWebHooks(){

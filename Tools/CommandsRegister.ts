@@ -14,10 +14,10 @@ export class CommandsRegister {
         }
         commandsInitialized.push({ name: command.name, slash: (command.slashCommand as unknown as SlashCommandConfig).enabled })
       }
-      console.log("# - - - - COMMANDS - - - - #")
+      console.log("\x1b[36m", "# - - - - COMMANDS - - - - #")
       console.log(`# Slash commands : ${commandsInitialized.filter(c => c.slash).map(c => c.name).join(", ")}`)
       console.log(`# Basic commands : ${commandsInitialized.filter(c => !c.slash).map(c => c.name).join(", ")}`)
-      console.log("# - - - - COMMANDS - - - - #\n")
+      console.log("# - - - - COMMANDS - - - - #\n", "\x1b[0m")
     }else{
       throw new Error("./commands folder not found ! Please create it and put your commands files inside it.")
     }
