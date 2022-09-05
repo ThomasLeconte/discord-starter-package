@@ -1,7 +1,6 @@
-import { Client, Collection, ClientOptions, Message, Interaction, WebhookClient } from 'discord.js';
+import { Client, Collection, ClientOptions, Message, Interaction, WebhookClient, ApplicationCommandType, IntentsBitField, EmbedBuilder } from 'discord.js';
 import { MessageHandler } from './Tools/MessageHandler';
 import { CommandsRegister } from './Tools/CommandsRegister';
-import EmbedMessage from './Tools/EmbedMessage';
 import { MessageFormatter } from './Tools/MessageFormatter';
 import { InteractionHandler } from './Tools/InteractionHandler';
 import { CacheManager } from './Tools/CacheManager';
@@ -15,6 +14,7 @@ export class Bot extends Client {
   webhooks: Collection<String, WebhookClient> = new Collection();
 
   constructor(config: BotConfig) {
+    IntentsBitField.Flags.GuildMembers
     super(config.options);
     this.config = config;
     this.login().then(() => {
@@ -87,15 +87,13 @@ export class Bot extends Client {
     if (guildId != null) {
       this.application.commands.create({
         name,
-        type: 'USER',
-        defaultPermission: true
+        type: ApplicationCommandType.User
       }, guildId);
     } else {
       this.guilds.cache.forEach(guild => {
         this.application.commands.create({
           name,
-          type: 'USER',
-          defaultPermission: true
+          type: ApplicationCommandType.User
         }, guild.id);
       });
     }
@@ -106,8 +104,8 @@ export class Bot extends Client {
    * @param message message received from user
    * @param content content to send in response to message received
    */
-  sendMessage(message: Message, content: string | EmbedMessage | MessageFormatter) {
-    if (content instanceof EmbedMessage) {
+  sendMessage(message: Message, content: string | EmbedBuilder | MessageFormatter) {
+    if (content instanceof EmbedBuilder) {
       message.channel.send({ embeds: [content] });
     } else if (content instanceof MessageFormatter) {
       message.channel.send(content.format());

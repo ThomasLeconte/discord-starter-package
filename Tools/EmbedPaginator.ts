@@ -1,12 +1,14 @@
-import { Message } from "discord.js";
+import { APIEmbedField, ButtonStyle, ComponentType, Embed, Message } from "discord.js";
 import { Bot } from "../Bot";
-import EmbedMessage, { EmbedContent, EmbedProperties } from "./EmbedMessage";
+import { EmbedMessage } from "./EmbedMessage";
 import { MessageFormatter } from "./MessageFormatter";
+
+type EmbedOptions = { title?: string, description?: string };
 
 export type PaginationOption = { itemsPerPage?: number, previousIcon?: string, nextIcon?: string, previousLabel?: string, nextLabel?: string }
 export default class EmbedPaginator {
 
-  constructor(client: Bot, msg: Message, content: EmbedContent[], embedOptions: EmbedProperties, paginationOptions?: PaginationOption) {
+  constructor(client: Bot, msg: Message, content: APIEmbedField[], embedOptions: EmbedOptions, paginationOptions?: PaginationOption) {
 
     const previousLabel = paginationOptions?.previousLabel || "Previous";
     const previousIcon = paginationOptions?.previousIcon || "⏮️";
@@ -15,13 +17,13 @@ export default class EmbedPaginator {
     const itemsPerPage = paginationOptions?.itemsPerPage || 10;
 
     let page = 1
-    let chunk: EmbedContent[] = []
+    let chunk: APIEmbedField[] = []
     chunk = content.slice(0, itemsPerPage);
 
-    let embed = new EmbedMessage(client, embedOptions)
+    let embed = EmbedMessage(client, embedOptions.title, embedOptions.description)
     embed.setFields([])
     chunk.forEach(line => {
-      embed.addField(line.name, line.content)
+      embed.addFields({ name: line.name, value: line.value })
     })
 
     const previousID = msg.id + "-previous";
@@ -29,11 +31,11 @@ export default class EmbedPaginator {
 
     msg.reply(new MessageFormatter()
       .addEmbedMessage(embed)
-      .addButton(previousLabel, previousIcon, "PRIMARY", previousID, true)
-      .addButton(nextLabel, nextIcon, "PRIMARY", nextID)
+      .addButton(previousLabel, previousIcon, ButtonStyle.Primary, previousID, true)
+      .addButton(nextLabel, nextIcon, ButtonStyle.Primary, nextID)
       .format()
     ).then((message) => {
-      const collector = message.createMessageComponentCollector({ time: 9999999, componentType: "BUTTON" })
+      const collector = message.createMessageComponentCollector({ time: 9999999, componentType: ComponentType.Button })
       collector.on('collect', (interaction) => {
 
         if (interaction.user.id == msg.author.id) {
@@ -48,15 +50,15 @@ export default class EmbedPaginator {
 
           if (interaction.customId == previousID) {
             interaction.update(new MessageFormatter()
-              .addEmbedMessage(new EmbedMessage(client, { title: (embedOptions.title ? embedOptions.title : "Page ") + page, content: chunk }))
-              .addButton(previousLabel, previousIcon, "PRIMARY", previousID, page == 1)
-              .addButton(nextLabel, nextIcon, "PRIMARY", nextID)
-              .format())
+              .addEmbedMessage(EmbedMessage(client, (embedOptions.title ? embedOptions.title : "Page ") + page, embedOptions.description,  chunk))
+              .addButton(previousLabel, previousIcon, ButtonStyle.Primary, previousID, page == 1)
+              .addButton(nextLabel, nextIcon, ButtonStyle.Primary, nextID)
+              .format());
           } else if (interaction.customId == nextID) {
             interaction.update(new MessageFormatter()
-              .addEmbedMessage(new EmbedMessage(client, { title: (embedOptions.title ? embedOptions.title : "Page ") + page, content: chunk }))
-              .addButton(previousLabel, previousIcon, "PRIMARY", previousID)
-              .addButton(nextLabel, nextIcon, "PRIMARY", nextID, endIndex >= content.length)
+              .addEmbedMessage(EmbedMessage(client, (embedOptions.title ? embedOptions.title : "Page ") + page, embedOptions.description, chunk))
+              .addButton(previousLabel, previousIcon, ButtonStyle.Primary, previousID)
+              .addButton(nextLabel, nextIcon, ButtonStyle.Primary, nextID, endIndex >= content.length)
               .format())
           }
         }

@@ -1,6 +1,6 @@
-import { Interaction, Message } from "discord.js";
-import { Bot, EventType } from "../Bot";
-import EmbedMessage from "../Tools/EmbedMessage";
+import { Message } from "discord.js";
+import { Bot } from "../Bot";
+import { ErrorEmbed, SuccessEmbed } from "../Tools/EmbedMessage";
 import { MessageFormatter } from "../Tools/MessageFormatter";
 
 // DO NOT DELETE THIS COMMAND !
@@ -30,20 +30,20 @@ module.exports = {
           if (client.disabledCommands.has(args[0])) {
             client.disabledCommands.delete(args[0]);
             const result = new MessageFormatter();
-            result.addEmbedMessage(EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`));
+            result.addEmbedMessage(SuccessEmbed(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`));
             return result;
           } else {
             client.disabledCommands.set(args[0], true);
-            return EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" has been disabled !`);
+            return SuccessEmbed(client, `**Disable - Success**`, `The command "${args[0]}" has been disabled !`);
           }
         }else{
-          return EmbedMessage.showError(client, "**Disable - Error**", `Command "${args[0]}" doesn't exist.`);
+          return ErrorEmbed(client, "**Disable - Error**", `Command "${args[0]}" doesn't exist.`);
         }
       } else {
-        return EmbedMessage.showError(client, `**Disable - Error**`, `You don't have the permission to use this command !`);
+        return ErrorEmbed(client, `**Disable - Error**`, `You don't have the permission to use this command !`);
       }
     }else{
-      return EmbedMessage.showError(client, "**Disable - Error**", "You must specify a command name to disable.");
+      return ErrorEmbed(client, "**Disable - Error**", "You must specify a command name to disable.");
     }
   }
 }

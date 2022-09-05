@@ -1,6 +1,6 @@
-import { Modal, TextInputComponent, TextInputStyleResolvable, MessageActionRow, ModalActionRowComponent, TextInputComponentOptions } from "discord.js";
+import { ActionRowBuilder, APITextInputComponent, ModalActionRowComponent, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 
-export default class Builder extends Modal {
+export default class Builder extends ModalBuilder {
 
   constructor(title: string, customId: string) {
     super();
@@ -8,14 +8,10 @@ export default class Builder extends Modal {
     this.setCustomId(customId);
   }
 
-  addTextInput(options: TextInputComponentOptions, textarea: boolean) {
-    const textInput = new TextInputComponent(options).setStyle(textarea ? "PARAGRAPH" : "SHORT");
-    const row = new MessageActionRow<ModalActionRowComponent>().addComponents(textInput);
+  addTextInput(options: {label: string, custom_id: string}, textarea: boolean) {
+    const textInput = new TextInputBuilder(options).setStyle(textarea ? TextInputStyle.Paragraph : TextInputStyle.Short);
+    const row = new ActionRowBuilder<TextInputBuilder>().addComponents(textInput);
     this.addComponents(row);
     return this;
-  }
-
-  getCustomId(): string {
-    return this.customId;
   }
 }

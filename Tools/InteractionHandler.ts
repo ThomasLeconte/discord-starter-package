@@ -1,6 +1,6 @@
-import { Interaction, Modal } from "discord.js";
+import { EmbedBuilder, Interaction, InteractionType, ModalBuilder } from "discord.js";
 import { Bot } from "../Bot";
-import EmbedMessage from "./EmbedMessage";
+import { ErrorEmbed } from "./EmbedMessage";
 import { MessageFormatter } from "./MessageFormatter";
 
 export class InteractionHandler {
@@ -46,7 +46,11 @@ export class InteractionHandler {
 
   listen(){
     this.bot.on('interactionCreate', async interaction => {
-      if (interaction.isApplicationCommand() && !interaction.isUserContextMenu()) {
+      if (interaction.isChatInputCommand() && !interaction.isUserContextMenuCommand()) {
+        if (this.bot.disabledCommands.has(interaction.command.name)) {
+          interaction.reply({ embeds: [ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${interaction.command.name}" is disabled !`)]});
+          return;
+        }
         const args = (interaction.options as any)._hoistedOptions
         const channel = this.bot.channels.cache.find(c => c.id == interaction.channelId)
         const guild = this.bot.guilds.cache.get(interaction.guildId)
@@ -69,13 +73,13 @@ export class InteractionHandler {
         }).catch(err => console.error(err));
 
         const newArgs = args != undefined ? args.map((el: any) => el.value) : []
-        await this.bot.commands.get(interaction.command.name.toLocaleLowerCase()).execute(this.bot, message, newArgs).then((result: string | EmbedMessage | MessageFormatter | Modal) => {
+        await this.bot.commands.get(interaction.command.name.toLocaleLowerCase()).execute(this.bot, message, newArgs).then((result: string | EmbedBuilder | MessageFormatter | ModalBuilder) => {
           if (result) {
-            if (result instanceof EmbedMessage) {
+            if (result instanceof EmbedBuilder) {
               interaction.reply({ embeds: [result] });
             } else if (result instanceof MessageFormatter) {
               interaction.reply(result.format());
-            } else if(result instanceof Modal) {
+            } else if(result instanceof ModalBuilder) {
               interaction.showModal(result);
             } else {
               interaction.reply(result);
@@ -86,14 +90,14 @@ export class InteractionHandler {
         }).catch((err: Error) => {
           console.error(`An error has occured : ${err.message}\n${err.stack}`)
           interaction.reply({embeds: [
-            EmbedMessage.showError(this.bot, `**${this.bot.name()} - Error**`, "An error has occured with this command. Please try again later ...")
+            ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, "An error has occured with this command. Please try again later ...")
           ]})
         });
-      } else if (interaction.isButton() || interaction.isSelectMenu() || interaction.isModalSubmit()) {
+      } else if (interaction.isButton() || interaction.isSelectMenu() || interaction.type == InteractionType.ModalSubmit) {
         if (this.interactionsEvent.has(interaction.customId)) {
           this.interactionsEvent.get(interaction.customId)(interaction);
         }
-      } else if (interaction.isUserContextMenu()) {
+      } else if (interaction.isUserContextMenuCommand()) {
         if(this.contextMenuEvent.has(interaction.commandName)){
           this.contextMenuEvent.get(interaction.commandName)(interaction);
         }        

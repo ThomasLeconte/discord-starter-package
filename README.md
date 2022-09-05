@@ -32,9 +32,10 @@ Then, just copy this into your new file :
       "adminRole": "admin",
       "options": {
         "intents": [
-          "GUILDS",
-          "GUILD_MEMBERS",
-          "GUILD_MESSAGES"
+          "Guilds",
+          "GuildsMembers",
+          "GuildsMessages",
+          "MessageContent"
         ]
       },
       "webhooks": []
@@ -61,7 +62,6 @@ Your commands must follow a specific pattern. The file will have to be a module 
 ```ts
 import { Message } from "discord.js";
 import { Bot } from "../Bot";
-import EmbedMessage from "../Tools/EmbedMessage";
 
 module.exports = {
   name: '',
@@ -87,7 +87,7 @@ Just make a new instance of it and look at possibilites :
 
 const result = new MessageFormatter();
 // add an Embed Message ... Pff, to easy :)
-result.addEmbedMessage(EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`));
+result.addEmbedMessage(SuccessEmbed(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`));
 
 // add a button ? Dude, I said it was easy to use, trust me !
 result.addButton("Get karmated", "💥", "DANGER", "karma_button");

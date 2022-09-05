@@ -1,14 +1,14 @@
-import { MessageActionRow, MessageButton, MessageButtonStyle, MessageEmbed, MessageSelectMenu } from "discord.js";
+import { ActionRowBuilder, APIEmbed, ButtonBuilder, ButtonStyle, EmbedBuilder, SelectMenuBuilder } from "discord.js";
 
 export type SelectOption = {label: string, description: string, value: string};
 export class MessageFormatter {
-  private embeds: MessageEmbed[];
+  private embeds: EmbedBuilder[];
   private content: string;
-  private components: MessageActionRow;
+  private components: ActionRowBuilder;
   private files: string[];
 
   constructor(){
-    this.components = new MessageActionRow();
+    this.components = new ActionRowBuilder();
     this.embeds = [];
     this.files = [];
   }
@@ -23,13 +23,13 @@ export class MessageFormatter {
     return this;
   }
 
-  addEmbedMessage(embed: MessageEmbed): this {
+  addEmbedMessage(embed: EmbedBuilder): this {
     this.embeds.push(embed);
     return this;
   }
 
-  addButton(label: string, emoji: string, style: MessageButtonStyle, customId: string, disabled: boolean = false, url: string | null = null): this {
-    const button = new MessageButton()
+  addButton(label: string, emoji: string, style: ButtonStyle, customId: string, disabled: boolean = false, url: string | null = null): this {
+    const button = new ButtonBuilder()
       .setLabel(label)
       .setEmoji(emoji)
       .setStyle(style)
@@ -41,7 +41,7 @@ export class MessageFormatter {
   }
 
   addSelectMenu(options: SelectOption[], customId: string, placeholder: string | null = null): this {
-    const button = new MessageSelectMenu()
+    const button = new SelectMenuBuilder()
       .setOptions(options)
       .setCustomId(customId);
     if(placeholder) button.setPlaceholder(placeholder) 
