@@ -1,26 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "pretty": true,
+    /* Set the JavaScript language version for emitted JavaScript and include 
+       compatible library declarations. */
+    "target": "ES6",
+    /* Specify what module code is generated. */
+    "module": "CommonJS",
+    /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
     "declaration": true,
-    "noImplicitAny": true,
-    "removeComments": true,
-    "experimentalDecorators": true,
-    "rootDir": ".",
+    /* Create source map files for emitted JavaScript files. */
     "sourceMap": true,
-    "listFiles": true,
-    "newLine": "CRLF",
-    "noEmitOnError": true,
-    "outDir": "./dist"
+    /* Specify an output folder for all emitted files. */
+    "outDir": "./lib",
+    "strict": true,
   },
   "include": [
-    "./**/*.ts",
-    "./config.env",
-    "./**/*.yaml"
+    "src",
   ],
   "exclude": [
-    "./node_modules",
-    "./dist"
+    "**/node_modules",
   ]
 }

@@ -1,34 +1,56 @@
 import { APIEmbedField, EmbedBuilder } from 'discord.js';
 import { Bot } from '../Bot';
 
+/**
+ *
+ * @param client Your bot instance
+ * @param title Title of embed
+ * @param desc Description inside embed
+ * @returns
+ */
 function ErrorEmbed(client: Bot, title: string, desc: string) {
-  return new EmbedBuilder().setTitle(title).setDescription(desc).setColor(0xe74c3c)
-    .setFooter({ text: "© " + client.user.username, iconURL: client.user.avatarURL() });
+  const footer: any = { text: '© ' + client.user?.username };
+  footer.iconURL = client.user?.avatarURL();
+  return new EmbedBuilder().setTitle(title).setDescription(desc).setColor(0xe74c3c).setFooter(footer);
 }
 
+/**
+ *
+ * @param client Your bot instance
+ * @param title Title of embed
+ * @param desc Description inside embed
+ * @returns
+ */
 function SuccessEmbed(client: Bot, title: string, desc: string) {
-  return new EmbedBuilder().setTitle(title).setDescription(desc).setColor(0x2ecc71)
-    .setFooter({ text: "© " + client.user.username, iconURL: client.user.avatarURL() });
+  const footer: any = { text: '© ' + client.user?.username };
+  footer.iconURL = client.user?.avatarURL();
+  return new EmbedBuilder().setTitle(title).setDescription(desc).setColor(0x2ecc71).setFooter(footer);
 }
 
+/**
+ *
+ * @param client Your bot instance
+ * @param title Title of embed
+ * @param desc Description inside embed
+ * @param fields Optional - Fields inside embed
+ * @returns
+ */
 function EmbedMessage(client: Bot, title?: string, desc?: string, fields?: APIEmbedField[]) {
-  const result =  new EmbedBuilder()
+  const footer: any = { text: '© ' + client.user?.username };
+  footer.iconURL = client.user?.avatarURL();
+  const result = new EmbedBuilder()
     .setColor(0xabc9c)
-    .setThumbnail(client.user.displayAvatarURL())
+    .setThumbnail(client.user!!.displayAvatarURL())
     // .setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL() })
     .setTimestamp()
-    .setFooter({ text: "© " + client.user.username, iconURL: client.user.avatarURL() });
-  if(title) result.setTitle(title);
-  if(desc) result.setDescription(desc);
+    .setFooter(footer);
+  if (title) result.setTitle(title);
+  if (desc) result.setDescription(desc);
   if (fields) result.setFields(fields);
   return result;
 }
 
-export {
-  ErrorEmbed,
-  SuccessEmbed,
-  EmbedMessage
-}
+export { ErrorEmbed, SuccessEmbed, EmbedMessage };
 
 // constructor(client: Bot, args: EmbedProperties) {
 //   // this.client = client;
