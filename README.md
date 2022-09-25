@@ -1,4 +1,4 @@
-# DiscordBot Starter
+# Discord starter package
 Little package for start a discord bot fastly and easily.  
 **Disclaimer:** This is not the best way, just my favorite way to build a discord bot. You can propose your own ideas with a pull request 😉
 
