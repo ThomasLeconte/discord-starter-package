@@ -1,5 +1,5 @@
 # DiscordBot Starter
-Little package for start a discord bot fastly and easily with TypeScript.  
+Little package for start a discord bot fastly and easily.  
 **Disclaimer:** This is not the best way, just my favorite way to build a discord bot. You can propose your own ideas with a pull request 😉
 
 ## Summary
@@ -15,56 +15,48 @@ Little package for start a discord bot fastly and easily with TypeScript.
 
 ## How use it
 
-**First of all, run `npm install` to add discordjs and typescript packages on your project**.
+**First of all, run `npm install discord.js discord-starter-package` to add discordjs and this package on your project**.  
 
-Then, you **must** create a `config.json` file on your project root.
-Then, just copy this into your new file :
+Then, you can init your bot instance with `init()` method :
+```js
+//main.js
+const { init } = require("discord-starter-package");
+
+const bot = init({
+  options: null,
+  token: "yourToken"
+})
+```
+This method take many options :
+
+
 ```json
 {
-  "env": "DEV",
-  "environments": {
-    "DEV": {
-      "name": "YourBotName",
-      "token": "YourBotPrivateToken",
-      "prefix": "/",
-      "slashCommands": false,
-      "autoLog": false,
-      "adminRole": "admin",
-      "options": {
-        "intents": [
-          "GUILDS",
-          "GUILD_MEMBERS",
-          "GUILD_MESSAGES"
-        ]
-      },
-      "webhooks": []
-    },
-    "PROD": {
-      ...
-    }
-  }
+  "name": "Discord bot", //optional
+  "token": "YourBotPrivateToken",
+  "prefix": "/",  
+  "autoLog": false,
+  "adminRole": "admin", //optional
+  "options": {}, //ClientOptions instance
+  "webhooks": [], //optional
+  "defaultCommandsDisabled": [] //optional
 }
 ```
-By default, bot environment will be "DEV". You can change it to "PROD", or to your personalized environment name !
-Now, have a look to all properties of an environment :  
+Have a look to all properties of an environment :  
 - `name`: Your bot name
 - `token`: Your bot private token
 - `prefix`: Your bot prefix which be used at start of all your commands (when slash command option is not enabled on command)
-- `slashCommands`: Precise if you want to use Slash Commands system on all your commands.
 - `autoLog`: Define if you want automatic logs when commands are executed for see command name, player and arguments provided.
 - `adminRole`: Admin role name who's needed to admin commands. User will need to have a role with this name to allow execution.
 - `options`: Options that you want to add on your bot. This property is just a copy of `Discord.CLientOptions` class.
 - `webhooks`: List of webhooks that you want to use in your code.
+- `defaultCommandsDisabled`: List of default commands provided by this package that you want to disable. You can disable one of these commands: `help`, `disableCommand`, `feedback`, `ping`
 
 Finally, you can launch your discord bot with following command : `npm run bot`.
 
 ## Commands
 Your commands must follow a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command and aliases should be like that :
 ```ts
-import { Message } from "discord.js";
-import { Bot } from "../Bot";
-import EmbedMessage from "../Tools/EmbedMessage";
-
 module.exports = {
   name: '',
   description: '',
@@ -76,7 +68,7 @@ module.exports = {
   admin: false,
   alias: [],
 
-  async execute(client: Bot, message: Message, args: string[]){
+  async execute(client, message, args){
   }
 }
 ```
@@ -89,7 +81,7 @@ Just make a new instance of it and look at possibilites :
 
 const result = new MessageFormatter();
 // add an Embed Message ... Pff, to easy :)
-result.addEmbedMessage(EmbedMessage.showSuccess(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`));
+result.addEmbedMessage(SuccessEmbed(client, `**Disable - Success**`, `The command "${args[0]}" has been enabled !`));
 
 // add a button ? Dude, I said it was easy to use, trust me !
 result.addButton("Get karmated", "💥", "DANGER", "karma_button");
@@ -118,9 +110,9 @@ Sometimes, a pagination should be great to not spam your channel. With Discord.J
 You can personnalize your embed with available options of `EmbedMessage`, and personnalize skin of your previous / next button.
 ```ts
 // Concider you're on a command file ...
-const content: EmbedContent[] = []
+const content = []
 for (let i = 0; i < 30; i++) {
-  content.push({ name: "name-" + i, content: "value-" + i })
+  content.push({ name: "name-" + i, value: "value-" + i })
 }
 
 // EmbedPaginator(client, message, content to show in embed, embed options, paginator options)
@@ -146,7 +138,7 @@ Check this out :
 const result = new MessageFormatter();
 result.addButton("Get karmated", "💥", "DANGER", "karma_button");
 
-client.setNewEvent(EventType.BUTTON_EVENT, "karma_button", (interaction: Interaction) => {
+client.setNewEvent(EventType.BUTTON_EVENT, "karma_button", (interaction) => {
   console.log(interaction.member.user.username + " has clicked on the main menu button");
 });
 
@@ -166,7 +158,7 @@ modal.addTextInput("My Textarea label", "my_textarea_custom_id", true) //textare
 
 Like Embed components, you can handle interaction of modal submission like this :
 ```ts
-client.setNewEvent(EventType.MODAL_SUBMIT_EVENT, modal.getCustomId(), (interaction: Interaction) => {
+client.setNewEvent(EventType.MODAL_SUBMIT_EVENT, modal.getCustomId(), (interaction) => {
   if(interaction.isModalSubmit()){
     console.log(`${interaction.customId} modal has been submitted...`);
   }
@@ -193,22 +185,16 @@ client.setNewEvent(EventType.CONTEXT_MENU_EVENT, "test", (interaction: Interacti
 You can define all webhooks that you want to use with your bot. For do this, you just have to declare them inside `webhooks` property in environment that you're using.
 ```json
 {
-  "env": "DEV",
-  "environments": {
-    "DEV": {
-      ...
-      "webhooks": [
-        { "name": "myWebHook", "url": "https://discordapp.com/api/webhooks/id/token" }
-      ]
-    },
-    ...
-  }
+  ...
+  "webhooks": [
+    { "name": "myWebHook", "url": "https://discordapp.com/api/webhooks/id/token" }
+  ]
 }
 ```
 Then you can call your webhook with your bot client by the function `getWebhook(webhookName)`, inside one of your commands for example :
 ```ts
-  async execute(client: Bot, message: Message, args: string[]) {
-    client.getWebHook("tata").send("Hi")
+  async execute(client, message, args) {
+    client.getWebHook("myWebHook").send("Hi")
     ...
   }
 ```
