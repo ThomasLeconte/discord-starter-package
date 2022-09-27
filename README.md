@@ -15,7 +15,7 @@ Little package for start a discord bot fastly and easily.
 
 ## How use it
 
-**First of all, run `npm install discord.js discord-starter-package` to add discordjs and this package on your project**.  
+**First of all, run `npm install discord-starter-package` to add discordjs and this package on your project**.  
 
 Then, you can init your bot instance with `init()` method :
 ```js
