@@ -1,5 +1,6 @@
 import { Bot, BotConfig } from './Bot';
 import { exec } from 'child_process';
+import { consoleWarn } from './Tools/LogUtils';
 
 function init(config: BotConfig): Promise<Bot> {
   // const bot = new Bot(config);
@@ -17,25 +18,25 @@ function checkConfiguration(config: BotConfig): Promise<BotConfig> {
     throw new Error('No token provided in the configuration !');
   }
 
-  if (!config.name) console.warn("⚠️ No name provided in the configuration, using default name : 'Discord Bot'");
+  if (!config.name) consoleWarn("⚠️ No name provided in the configuration, using default name : 'Discord Bot'");
 
   if (!config.options)
-    console.warn(
+    consoleWarn(
       "⚠️ No options provided in the configuration, using default options : { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] }",
     );
 
-  if (!config.prefix) console.warn("⚠️ No prefix provided in the configuration, using default prefix : '/'");
+  if (!config.prefix) consoleWarn("⚠️ No prefix provided in the configuration, using default prefix : '/'");
 
   if (!config.defaultCommandsDisabled)
-    console.warn(
+    consoleWarn(
       '⚠️ No defaultCommandsDisabled provided in the configuration, using default defaultCommandsDisabled : []',
     );
 
   if (config.autoLog === undefined)
-    console.warn('⚠️ No autoLog provided in the configuration, using default autoLog : false');
+    consoleWarn('⚠️ No autoLog provided in the configuration, using default autoLog : false');
 
   if (!config.adminRole)
-    console.warn("⚠️ No adminRole provided in the configuration, using default adminRole : 'Admin'");
+    consoleWarn("⚠️ No adminRole provided in the configuration, using default adminRole : 'Admin'");
 
   config.name = config.name || 'Discord Bot';
   config.options = config.options || { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] };
@@ -64,8 +65,7 @@ function checkPackageVersion() {
       const userPackageVersion = userPackageJson.dependencies[packageJson.name].replace('^', '');
 
       if (npmPackageVersion !== userPackageVersion) {
-        console.warn(
-          '\x1b[32m%s\x1b[0m',
+        consoleWarn(
           `⚠️ You are using an outdated version of ${
             packageJson.name
           } ! Please update to the latest version (${stdout.trim()})`,
@@ -75,8 +75,7 @@ function checkPackageVersion() {
       const packageDiscordVersionDependency = packageJson.dependencies['discord.js'].replace('^', '');
       const userDiscordVersionDependency = userPackageJson.dependencies['discord.js'].replace('^', '');
       if (packageDiscordVersionDependency !== userDiscordVersionDependency) {
-        console.warn(
-          '\x1b[32m%s\x1b[0m',
+        consoleWarn(
           `🧨 You are using a different version of discord.js ! Please update discord.js package version to ${packageDiscordVersionDependency} for the best compatibility with ${packageJson.name}.`,
         );
       }
