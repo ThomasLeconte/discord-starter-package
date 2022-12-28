@@ -49,23 +49,35 @@ function checkConfiguration(config: BotConfig): Promise<BotConfig> {
 
 function checkPackageVersion() {
   const packageJson = require('../package.json');
-  const projectPackageJson = require(`${require.main?.path}/package.json`);
+  const userPackageJson = require(`${require.main?.path}/package.json`);
   exec(`npm show ${packageJson.name} version`, (error, stdout, stderr) => {
     if (error) {
-      console.error(`exec error: ${error}`);
+      console.error(`Error(exec) during version check process: ${error}`);
       return;
     }
     if (stderr) {
-      console.error(`stderr: ${stderr}`);
+      console.error(`Error(stderr) during version check process: ${stderr}`);
       return;
     }
     if (stdout) {
-      if (stdout.trim() !== projectPackageJson.dependencies[packageJson.name].replace('^', '')) {
+      const npmPackageVersion = stdout.trim();
+      const userPackageVersion = userPackageJson.dependencies[packageJson.name].replace('^', '');
+
+      if (npmPackageVersion !== userPackageVersion) {
         console.warn(
           '\x1b[32m%s\x1b[0m',
           `⚠️ You are using an outdated version of ${
             packageJson.name
           } ! Please update to the latest version (${stdout.trim()})`,
+        );
+      }
+
+      const packageDiscordVersionDependency = packageJson.dependencies['discord.js'].replace('^', '');
+      const userDiscordVersionDependency = userPackageJson.dependencies['discord.js'].replace('^', '');
+      if (packageDiscordVersionDependency !== userDiscordVersionDependency) {
+        console.warn(
+          '\x1b[32m%s\x1b[0m',
+          `🧨 You are using a different version of discord.js ! Please update discord.js package version to ${packageDiscordVersionDependency} for the best compatibility with ${packageJson.name}.`,
         );
       }
     }
