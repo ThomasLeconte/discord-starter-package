@@ -2,7 +2,7 @@ import { Bot, EventType, Command } from './Bot';
 import { ErrorEmbed, SuccessEmbed, EmbedMessage } from './Tools/EmbedMessage';
 import { EmbedPaginator, PaginationOption } from './Tools/EmbedPaginator';
 import ModalConstructor from './Tools/ModalConstructor';
-import { MessageFormatter } from './Tools/MessageFormatter';
+import { MessageFormatter, SelectMenuType } from './Tools/MessageFormatter';
 import { init } from './init';
 
 export {
@@ -10,6 +10,7 @@ export {
   init,
   Command,
   EventType,
+  SelectMenuType,
   ErrorEmbed,
   SuccessEmbed,
   EmbedMessage,

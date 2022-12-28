@@ -12,14 +12,14 @@ import { MessageHandler } from './Tools/MessageHandler';
 import { CommandsRegister } from './Tools/CommandsRegister';
 import { MessageFormatter } from './Tools/MessageFormatter';
 import { InteractionHandler } from './Tools/InteractionHandler';
-import { CacheManager } from './Tools/CacheManager';
+import { Logger } from './Tools/LogUtils';
 
 export class Bot extends Client {
   commands: Collection<string, any> = new Collection();
   disabledCommands: Collection<string, any> = new Collection();
   config: BotConfig;
   interactionHandler?: InteractionHandler;
-  logger?: CacheManager;
+  logger?: Logger;
   webhooks: Collection<string, WebhookClient> = new Collection();
 
   constructor(config: BotConfig) {
@@ -44,7 +44,7 @@ export class Bot extends Client {
     this.interactionHandler = new InteractionHandler(this);
     this.interactionHandler.listen();
     new MessageHandler(this).listen();
-    this.logger = new CacheManager(this);
+    this.logger = new Logger(this);
     if (this.config.webhooks && this.config.webhooks.length > 0) {
       this.initWebHooks();
     }
@@ -75,7 +75,7 @@ export class Bot extends Client {
 
   log(content: string, prefix: string | null = null) {
     if (!this.logger) {
-      this.logger = new CacheManager(this);
+      this.logger = new Logger(this);
     }
     this.logger.addLog(content, prefix);
   }
