@@ -13,27 +13,35 @@ function init(config: BotConfig): Promise<Bot> {
 }
 
 function checkConfiguration(config: BotConfig): Promise<BotConfig> {
-  if (!config.token) {
+  if (config.token === undefined || config.token === '') {
     throw new Error('No token provided in the configuration !');
   }
+
   if (!config.name) console.warn("⚠️ No name provided in the configuration, using default name : 'Discord Bot'");
-  config.name = config.name || 'Discord Bot';
+
   if (!config.options)
     console.warn(
       "⚠️ No options provided in the configuration, using default options : { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] }",
     );
-  config.options = config.options || { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] };
+
   if (!config.prefix) console.warn("⚠️ No prefix provided in the configuration, using default prefix : '/'");
-  config.prefix = config.prefix || '/';
+
   if (!config.defaultCommandsDisabled)
     console.warn(
       '⚠️ No defaultCommandsDisabled provided in the configuration, using default defaultCommandsDisabled : []',
     );
-  config.defaultCommandsDisabled = config.defaultCommandsDisabled || [];
-  if (!config.autoLog) console.warn('⚠️ No autoLog provided in the configuration, using default autoLog : false');
-  config.autoLog = config.autoLog || false;
+
+  if (config.autoLog === undefined)
+    console.warn('⚠️ No autoLog provided in the configuration, using default autoLog : false');
+
   if (!config.adminRole)
     console.warn("⚠️ No adminRole provided in the configuration, using default adminRole : 'Admin'");
+
+  config.name = config.name || 'Discord Bot';
+  config.options = config.options || { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] };
+  config.prefix = config.prefix || '/';
+  config.defaultCommandsDisabled = config.defaultCommandsDisabled || [];
+  config.autoLog = config.autoLog || false;
   config.adminRole = config.adminRole || 'Admin';
 
   return Promise.resolve(config);

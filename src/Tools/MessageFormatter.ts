@@ -1,6 +1,26 @@
-import { ActionRowBuilder, APIEmbed, ButtonBuilder, ButtonStyle, EmbedBuilder, SelectMenuBuilder } from 'discord.js';
+import {
+  ActionRowBuilder,
+  BaseSelectMenuBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ChannelSelectMenuBuilder,
+  EmbedBuilder,
+  MentionableSelectMenuBuilder,
+  RoleSelectMenuBuilder,
+  SelectMenuBuilder,
+  StringSelectMenuBuilder,
+  UserSelectMenuBuilder,
+} from 'discord.js';
 
-export type SelectOption = { label: string; description: string; value: string };
+export enum SelectMenuType {
+  STRING,
+  ROLE,
+  USER,
+  MENTIONABLE,
+  CHANNEL,
+}
+
+export type SelectOption = { label: string; description?: string; value: string };
 export class MessageFormatter {
   private embeds: EmbedBuilder[];
   private content?: string;
@@ -79,10 +99,32 @@ export class MessageFormatter {
    * @param placeholder Optional - Placeholder of the select menu
    * @returns
    */
-  addSelectMenu(options: SelectOption[], customId: string, placeholder: string | null = null): this {
-    const button = new SelectMenuBuilder().setOptions(options).setCustomId(customId);
-    if (placeholder) button.setPlaceholder(placeholder);
-    this.components.addComponents(button);
+  addSelectMenu(
+    type: keyof typeof SelectMenuType,
+    options?: SelectOption[],
+    customId?: string,
+    placeholder?: string,
+  ): this {
+    let selectMenu;
+    if (type === 'STRING') selectMenu = new StringSelectMenuBuilder();
+    if (type === 'USER') selectMenu = new UserSelectMenuBuilder();
+    if (type === 'ROLE') selectMenu = new RoleSelectMenuBuilder();
+    if (type === 'MENTIONABLE') selectMenu = new MentionableSelectMenuBuilder();
+    if (type === 'CHANNEL') selectMenu = new ChannelSelectMenuBuilder();
+    if (selectMenu) {
+      if (selectMenu instanceof StringSelectMenuBuilder) {
+        if (!options) throw new Error('Options are required for select menu component !');
+        selectMenu.setOptions(options);
+      }
+      if (customId) selectMenu.setCustomId(customId);
+      if (placeholder) selectMenu.setPlaceholder(placeholder);
+      this.components.addComponents(selectMenu);
+    }
+    return this;
+  }
+
+  addComponent(component: any) {
+    this.components.addComponents(component);
     return this;
   }
 

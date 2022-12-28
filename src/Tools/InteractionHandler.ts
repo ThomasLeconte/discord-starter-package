@@ -1,4 +1,4 @@
-import { EmbedBuilder, Interaction, InteractionType, ModalBuilder } from 'discord.js';
+import { EmbedBuilder, Interaction, InteractionReplyOptions, InteractionType, ModalBuilder } from 'discord.js';
 import { Bot } from '../Bot';
 import { ErrorEmbed } from './EmbedMessage';
 import { MessageFormatter } from './MessageFormatter';
@@ -82,7 +82,6 @@ export class InteractionHandler {
             }
           })
           .catch((err) => console.error(err));
-
         const newArgs = args !== undefined ? args.map((el: any) => el.value) : [];
         await this.bot.commands
           .get(interaction.command.name.toLocaleLowerCase())
@@ -102,14 +101,19 @@ export class InteractionHandler {
                   case 'ModalConstructor':
                     interaction.showModal(result as ModalBuilder);
                     break;
+                  case 'Object':
+                    if (this.canBeCastedToInteractionReply(result)) {
+                      interaction.reply(result as InteractionReplyOptions);
+                    }
+                    break;
                 }
               }
               if (!(result.constructor.name === 'ModalConstructor')) {
                 if (this.bot.config.autoLog)
                   this.bot.log(
-                    `${command} command executed by ${message.author.username} with following args: [${newArgs.join(
-                      ', ',
-                    )}]`,
+                    `${interaction.command?.name} command executed by ${
+                      message.author.username
+                    } with following args: [${args.map((a: any) => '{' + a.name + ': ' + a.value + '}').join(', ')}]`,
                   );
               }
             }
@@ -129,7 +133,7 @@ export class InteractionHandler {
           });
       } else if (
         interaction.isButton() ||
-        interaction.isSelectMenu() ||
+        interaction.isAnySelectMenu() ||
         interaction.type === InteractionType.ModalSubmit
       ) {
         if (this.interactionsEvent.has(interaction.customId)) {
@@ -141,5 +145,13 @@ export class InteractionHandler {
         }
       }
     });
+  }
+  canBeCastedToInteractionReply(object: any): boolean {
+    return (
+      object.hasOwnProperty('content') ||
+      object.hasOwnProperty('embeds') ||
+      object.hasOwnProperty('files') ||
+      object.hasOwnProperty('components')
+    );
   }
 }

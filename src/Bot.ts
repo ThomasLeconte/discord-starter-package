@@ -12,7 +12,7 @@ import { MessageHandler } from './Tools/MessageHandler';
 import { CommandsRegister } from './Tools/CommandsRegister';
 import { MessageFormatter } from './Tools/MessageFormatter';
 import { InteractionHandler } from './Tools/InteractionHandler';
-import { CacheManager } from './Tools/CacheManager';
+import { CacheManager } from './Tools/Log';
 
 export class Bot extends Client {
   commands: Collection<string, any> = new Collection();
