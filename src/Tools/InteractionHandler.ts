@@ -45,17 +45,28 @@ export class InteractionHandler {
   }
 
   listen() {
-    this.bot.on('interactionCreate', async (interaction) => {
+    this.bot.on('interactionCreate', async (interaction: Interaction) => {
       if (interaction.isChatInputCommand() && !interaction.isUserContextMenuCommand()) {
         if (!interaction.command) return;
         if (!interaction.guildId) return;
 
-        const command: string = this.bot.commands.get(interaction.command.name);
-        if (this.bot.disabledCommands.has(command)) {
+        const command = this.bot.commands.get(interaction.command.name);
+        if (!command) {
+          console.error(`Command ${interaction.command.name} not found !`);
+          return;
+        }
+
+        if (this.bot.disabledCommands.has(command.name)) {
           interaction.reply({
             embeds: [ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${command}" is disabled !`)],
           });
           return;
+        }
+
+        const isPrivateResult = command.slashCommand.private !== undefined && command.slashCommand.private === true;
+
+        if (isPrivateResult) {
+          await interaction.deferReply({ ephemeral: true });
         }
 
         const args = (interaction.options as any)._hoistedOptions;
@@ -83,32 +94,29 @@ export class InteractionHandler {
           })
           .catch((err) => console.error(err));
         const newArgs = args !== undefined ? args.map((el: any) => el.value) : [];
-        await this.bot.commands
-          .get(interaction.command.name.toLocaleLowerCase())
+        await (command as any)
           .execute(this.bot, message, newArgs)
           .then((result: string | EmbedBuilder | MessageFormatter | ModalBuilder) => {
             if (result) {
-              if (typeof result === 'string') {
-                interaction.reply(result);
-              } else {
-                switch (result.constructor.name) {
-                  case 'EmbedBuilder':
-                    interaction.reply({ embeds: [result as EmbedBuilder] });
-                    break;
-                  case 'MessageFormatter':
-                    interaction.reply((result as MessageFormatter).format());
-                    break;
-                  case 'ModalConstructor':
-                    interaction.showModal(result as ModalBuilder);
-                    break;
-                  case 'Object':
-                    if (this.canBeCastedToInteractionReply(result)) {
-                      interaction.reply(result as InteractionReplyOptions);
-                    }
-                    break;
-                }
+              let finalResult = null;
+              switch (result.constructor.name) {
+                case 'String':
+                case 'EmbedBuilder':
+                case 'MessageFormatter':
+                case 'Object':
+                  finalResult = this.formatResponseByType(result);
+                  if (isPrivateResult) {
+                    interaction.editReply(finalResult);
+                  } else {
+                    interaction.reply(finalResult);
+                  }
+                  break;
+                case 'ModalConstructor':
+                case 'ModalBuilder':
+                  interaction.showModal(result as ModalBuilder);
+                  break;
               }
-              if (!(result.constructor.name === 'ModalConstructor')) {
+              if (!(result.constructor.name === 'ModalConstructor' || result.constructor.name === 'ModalBuilder')) {
                 if (this.bot.config.autoLog)
                   this.bot.log(
                     `${interaction.command?.name} command executed by ${
@@ -146,6 +154,26 @@ export class InteractionHandler {
       }
     });
   }
+
+  formatResponseByType(response: any) {
+    switch (response.constructor.name) {
+      case 'String':
+        return { content: response as string };
+      case 'EmbedBuilder':
+        return { embeds: [response as EmbedBuilder] };
+      case 'MessageFormatter':
+        return (response as MessageFormatter).format();
+      case 'Object':
+        if (this.canBeCastedToInteractionReply(response)) {
+          return response as InteractionReplyOptions;
+        } else {
+          throw new Error(
+            "Can't cast object to InteractionReplyOptions type. Please refer to official discord developer documentation.",
+          );
+        }
+    }
+  }
+
   canBeCastedToInteractionReply(object: any): boolean {
     return (
       object.hasOwnProperty('content') ||

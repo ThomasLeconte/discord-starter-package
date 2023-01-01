@@ -8,8 +8,10 @@ module.exports = {
   name: 'disablecommand',
   description: 'Disable a command',
   usage: '/disablecommand <command>',
+  private: true,
   slashCommand: {
     enabled: true,
+    private: true,
     // To learn more about options field, please visit :
     // https://discord.com/developers/docs/interactions/application-commands#registering-a-command
     options: [

@@ -1,6 +1,6 @@
 import { Bot, BotConfig } from './Bot';
 import { exec } from 'child_process';
-import { consoleWarn } from './Tools/LogUtils';
+import { consoleError, consoleWarn } from './Tools/LogUtils';
 
 function init(config: BotConfig): Promise<Bot> {
   // const bot = new Bot(config);
@@ -20,17 +20,27 @@ function checkConfiguration(config: BotConfig): Promise<BotConfig> {
 
   if (!config.name) consoleWarn("⚠️ No name provided in the configuration, using default name : 'Discord Bot'");
 
-  if (!config.options)
+  if (!config.options) {
     consoleWarn(
       "⚠️ No options provided in the configuration, using default options : { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] }",
     );
+  } else {
+    if (!config.options.intents) {
+      consoleWarn(
+        "⚠️ No intents provided in the configuration, using default intents : { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] }",
+      );
+    }
+    if (!(config.options.intents as string[]).includes('MessageContent')) {
+      consoleError('🧨 No MessageContent intent provided in the configuration, basic commands will not be available.');
+    }
+  }
 
   if (!config.prefix) consoleWarn("⚠️ No prefix provided in the configuration, using default prefix : '/'");
 
-  if (!config.defaultCommandsDisabled)
-    consoleWarn(
-      '⚠️ No defaultCommandsDisabled provided in the configuration, using default defaultCommandsDisabled : []',
-    );
+  // if (!config.defaultCommandsDisabled)
+  //   consoleWarn(
+  //     '⚠️ No defaultCommandsDisabled provided in the configuration, using default defaultCommandsDisabled : []',
+  //   );
 
   if (config.autoLog === undefined)
     consoleWarn('⚠️ No autoLog provided in the configuration, using default autoLog : false');

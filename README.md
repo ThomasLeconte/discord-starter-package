@@ -60,9 +60,11 @@ Your commands must follow a specific pattern. The file will have to be a module 
 module.exports = {
   name: '',
   description: '',
-  usage: '',
+  usage: '', //How use command (explain parameters) => showed in /help command
+  private: false, //If it's a basic command, it will send private message
   slashCommand: {
     enabled: false,
+    private: false, //Will show the answer only to the message author
     options: []
   },
   admin: false,

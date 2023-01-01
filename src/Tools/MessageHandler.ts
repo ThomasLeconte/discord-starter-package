@@ -27,26 +27,37 @@ export class MessageHandler {
 
       const args = msg.content.slice(this.bot.config.prefix!.length).split(' ');
       if (args.length === 0) return;
-      const command = args.shift()!!.toLocaleLowerCase();
+      const commandName = args.shift()!!.toLocaleLowerCase();
 
-      if (this.bot.disabledCommands.has(command)) {
+      if (this.bot.disabledCommands.has(commandName)) {
         this.bot.sendMessage(
           msg,
-          ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${command}" is disabled !`),
+          ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${commandName}" is disabled !`),
         );
       } else {
-        if (this.bot.commands.has(command)) {
-          await this.bot.commands
-            .get(command)
+        if (this.bot.commands.has(commandName)) {
+          const command = this.bot.commands.get(commandName);
+          if (!command) {
+            console.error(`Command ${commandName} not found !`);
+            return;
+          }
+          await (command as any)
             .execute(this.bot, msg, args)
             .then((result: string | EmbedBuilder | MessageFormatter) => {
-              if (result) this.bot.sendMessage(msg, result);
-              if (this.bot.config.autoLog)
-                this.bot.log(
-                  `${this.bot.commands.get(command).name} command executed by ${
-                    msg.author.username
-                  } with following args: [${args.join(', ')}]`,
-                );
+              if (result) {
+                if (command.private !== undefined && command.private === true) {
+                  msg.author.send(this.formatResponseByType(result));
+                } else {
+                  this.bot.sendMessage(msg, result);
+                }
+
+                if (this.bot.config.autoLog)
+                  this.bot.log(
+                    `${commandName} command executed by ${msg.author.username} with following args: [${args.join(
+                      ', ',
+                    )}]`,
+                  );
+              }
             })
             .catch((err: Error) => {
               console.error(`An error has occured : ${err.message}\n${err.stack}`);
@@ -62,10 +73,23 @@ export class MessageHandler {
         } else {
           this.bot.sendMessage(
             msg,
-            ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${command}" does not exist.`),
+            ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${commandName}" does not exist.`),
           );
         }
       }
     });
+  }
+
+  formatResponseByType(response: any) {
+    switch (response.constructor.name) {
+      case 'String':
+        return { content: response as string };
+      case 'EmbedBuilder':
+        return { embeds: [response as EmbedBuilder] };
+      case 'MessageFormatter':
+        return (response as MessageFormatter).format();
+      default:
+        return null;
+    }
   }
 }

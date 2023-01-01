@@ -15,8 +15,8 @@ import { InteractionHandler } from './Tools/InteractionHandler';
 import { Logger } from './Tools/LogUtils';
 
 export class Bot extends Client {
-  commands: Collection<string, any> = new Collection();
-  disabledCommands: Collection<string, any> = new Collection();
+  commands: Collection<string, Command> = new Collection();
+  disabledCommands: Collection<string, boolean> = new Collection();
   config: BotConfig;
   interactionHandler?: InteractionHandler;
   logger?: Logger;
@@ -182,7 +182,7 @@ export enum EventType {
   MODAL_SUBMIT_EVENT = 'MODAL_SUBMIT',
 }
 
-export type SlashCommandConfig = { enabled: boolean; options?: object[] };
+export type SlashCommandConfig = { enabled: boolean; private?: boolean; options?: object[] };
 export type WebHookConfig = { name: string; url: string };
 export type BotConfig = {
   name?: string;
@@ -203,8 +203,10 @@ export class Command {
   admin: boolean;
   // alias?: string[];
   execute: void;
+  private?: boolean;
 
   constructor(data: any) {
+    this.private = data.private !== undefined ? data.private : false;
     if (
       data.name !== undefined &&
       data.description !== undefined &&

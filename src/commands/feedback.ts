@@ -22,7 +22,7 @@ module.exports = {
     client.setNewEvent(EventType.MODAL_SUBMIT_EVENT, feedbackKey, (interaction: Interaction) => {
       if (interaction.type === InteractionType.ModalSubmit) {
         console.log('A feedback has been submitted: ' + interaction.fields.getTextInputValue('feedback_input'));
-        interaction.reply('Thank you for your feedback!');
+        interaction.reply({ content: 'Thank you for your feedback!', ephemeral: true });
       }
     });
 
