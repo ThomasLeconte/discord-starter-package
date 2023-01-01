@@ -47,12 +47,17 @@ export class InteractionHandler {
   listen() {
     this.bot.on('interactionCreate', async (interaction: Interaction) => {
       if (interaction.isChatInputCommand() && !interaction.isUserContextMenuCommand()) {
-        if (!interaction.command) return;
         if (!interaction.guildId) return;
 
-        const command = this.bot.commands.get(interaction.command.name);
+        const command = this.bot.commands.get(interaction.commandName);
+
         if (!command) {
-          console.error(`Command ${interaction.command.name} not found !`);
+          console.error(`Command ${interaction.commandName} not found !`);
+          return;
+        }
+
+        if (!command.slashCommand) {
+          console.error(`Command ${interaction.commandName} is not a slash command !`);
           return;
         }
 

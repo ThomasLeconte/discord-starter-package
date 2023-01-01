@@ -1,14 +1,15 @@
-import { APIEmbedField, Message } from 'discord.js';
+import { APIEmbedField, Message, SlashCommandBuilder } from 'discord.js';
 import { Bot, Command } from '../Bot';
 import { EmbedMessage } from '../Tools/EmbedMessage';
 
 module.exports = {
   name: 'help',
   description: 'List all of my commands or info about a specific command.',
-  usage: '/help [command name]',
+  usage: '/help',
   slashCommand: {
-    enabled: true,
-    options: [],
+    data: new SlashCommandBuilder()
+      .setName('help')
+      .setDescription('List all of my commands or info about a specific command.'),
   },
   admin: false,
   alias: ['aide'],

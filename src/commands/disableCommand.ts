@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, SlashCommandBuilder } from 'discord.js';
 import { Bot } from '../Bot';
 import { ErrorEmbed, SuccessEmbed } from '../Tools/EmbedMessage';
 import { MessageFormatter } from '../Tools/MessageFormatter';
@@ -10,18 +10,13 @@ module.exports = {
   usage: '/disablecommand <command>',
   private: true,
   slashCommand: {
-    enabled: true,
+    data: new SlashCommandBuilder()
+      .setName('disablecommand')
+      .setDescription('Disable a command')
+      .addStringOption((option) =>
+        option.setName('command').setDescription('Command name to disable').setRequired(true),
+      ),
     private: true,
-    // To learn more about options field, please visit :
-    // https://discord.com/developers/docs/interactions/application-commands#registering-a-command
-    options: [
-      {
-        name: 'command',
-        description: 'Command name to disable',
-        type: 3,
-        required: true,
-      },
-    ],
   },
   admin: true,
 

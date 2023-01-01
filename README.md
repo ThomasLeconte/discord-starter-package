@@ -55,25 +55,36 @@ Have a look to all properties of an environment :
 Finally, you can launch your discord bot with following command : `npm run bot`.
 
 ## Commands
-Your commands must follow a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command and aliases should be like that :
+Your commands **must follow** a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command system should be like that :
 ```js
 module.exports = {
   name: '',
   description: '',
   usage: '', //How use command (explain parameters) => showed in /help command
-  private: false, //If it's a basic command, it will send private message
-  slashCommand: {
-    enabled: false,
-    private: false, //Will show the answer only to the message author
-    options: []
-  },
+  private: false, //It will send private message
   admin: false,
-  alias: [],
 
   async execute(client, message, args){
   }
 }
 ```
+Then, if you want to declare a slash command, you just need to provide this property after `admin` property showed before : 
+```js
+module.exports = {
+  ...
+  admin: false,
+  slashCommand: {
+    data: new SlashCommandBuilder()
+            .setName("yourCommandName")
+            .setDescription("Your command description"),
+    private: true //Optional, but it show the result of execution only for the message author.
+  }
+
+  async execute(client, message, args){
+  }
+}
+```
+
 
 ## Message
 DiscordJS v13 has introduced new features like Buttons or Select Menu components. So you can add them easily in your messages, with my tool `MessageFormatter` ! It easy to use, trust me :-)

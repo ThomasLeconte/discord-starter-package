@@ -7,6 +7,7 @@ import {
   WebhookClient,
   EmbedBuilder,
   ApplicationCommandType,
+  SlashCommandBuilder,
 } from 'discord.js';
 import { MessageHandler } from './Tools/MessageHandler';
 import { CommandsRegister } from './Tools/CommandsRegister';
@@ -40,21 +41,22 @@ export class Bot extends Client {
   }
 
   private initializeTools() {
-    CommandsRegister.registerCommands(this);
-    this.interactionHandler = new InteractionHandler(this);
-    this.interactionHandler.listen();
-    new MessageHandler(this).listen();
-    this.logger = new Logger(this);
-    if (this.config.webhooks && this.config.webhooks.length > 0) {
-      this.initWebHooks();
-    }
-    console.log('\x1b[35m', '# - - - - BOT - - - - #');
-    const inviteURL =
-      'https://discord.com/api/oauth2/authorize?client_id=' +
-      this.user?.id +
-      '&permissions=0&scope=bot%20applications.commands';
-    console.log('# Invitation link : ' + inviteURL);
-    console.log('# - - - - BOT - - - - #', '\x1b[0m');
+    CommandsRegister.registerCommands(this).then(() => {
+      this.interactionHandler = new InteractionHandler(this);
+      this.interactionHandler.listen();
+      new MessageHandler(this).listen();
+      this.logger = new Logger(this);
+      if (this.config.webhooks && this.config.webhooks.length > 0) {
+        this.initWebHooks();
+      }
+      console.log('\x1b[35m', '# - - - - BOT - - - - #');
+      const inviteURL =
+        'https://discord.com/api/oauth2/authorize?client_id=' +
+        this.user?.id +
+        '&permissions=0&scope=bot%20applications.commands';
+      console.log('# Invitation link : ' + inviteURL);
+      console.log('# - - - - BOT - - - - #', '\x1b[0m');
+    });
   }
 
   private initWebHooks() {
@@ -182,7 +184,7 @@ export enum EventType {
   MODAL_SUBMIT_EVENT = 'MODAL_SUBMIT',
 }
 
-export type SlashCommandConfig = { enabled: boolean; private?: boolean; options?: object[] };
+export type SlashCommandConfig = { data: SlashCommandBuilder; private?: boolean };
 export type WebHookConfig = { name: string; url: string };
 export type BotConfig = {
   name?: string;
@@ -199,7 +201,7 @@ export class Command {
   name: string;
   description: string;
   usage: string;
-  slashCommand: SlashCommandConfig;
+  slashCommand?: SlashCommandConfig;
   admin: boolean;
   // alias?: string[];
   execute: void;
@@ -207,24 +209,32 @@ export class Command {
 
   constructor(data: any) {
     this.private = data.private !== undefined ? data.private : false;
+    if (data.slashCommand !== undefined) {
+      if (data.slashCommand.data === undefined) {
+        throw new Error(
+          `You must specify data property to your "${data.name}" slash command. It must be a SlashCommandBuilder object.`,
+        );
+      } else {
+        this.slashCommand = data.slashCommand !== undefined ? data.slashCommand : null;
+      }
+    }
+
     if (
       data.name !== undefined &&
       data.description !== undefined &&
       data.usage !== undefined &&
-      data.slashCommand !== undefined &&
       data.admin !== undefined &&
       data.execute !== undefined
     ) {
       this.name = data.name;
       this.description = data.description;
       this.usage = data.usage;
-      this.slashCommand = data.slashCommand;
       this.admin = data.admin;
       // this.alias = data.alias;
       this.execute = data.execute;
     } else {
       throw new Error(
-        `You must specify name, description, usage, slashCommand, admin property and execute function to your "${data.name}" command.`,
+        `You must specify name, description, usage, admin property and execute function to your "${data.name}" command.`,
       );
     }
     // if(this.alias){

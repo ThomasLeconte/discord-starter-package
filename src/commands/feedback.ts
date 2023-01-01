@@ -1,4 +1,4 @@
-import { Interaction, InteractionType, Message } from 'discord.js';
+import { Interaction, InteractionType, Message, SlashCommandBuilder } from 'discord.js';
 import { Bot, EventType } from '../Bot';
 import ModalConstructor from '../Tools/ModalConstructor';
 
@@ -7,8 +7,7 @@ module.exports = {
   description: 'Give feedback of the bot',
   usage: '/feedback',
   slashCommand: {
-    enabled: true,
-    options: [],
+    data: new SlashCommandBuilder().setName('feedback').setDescription('Give feedback of the bot'),
   },
   admin: false,
 
