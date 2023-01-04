@@ -73,6 +73,8 @@ export class CommandsRegister {
     if (!bot.user) throw new Error('Bot user not found !');
 
     const rest = new REST({ version: '10' }).setToken(bot.config.token);
+    // Delete all commands before register new ones
+    await rest.put(Routes.applicationCommands(bot.user.id), { body: [] });
     return await rest.put(Routes.applicationCommands(bot.user.id), {
       body: commands.map((c) => c.slashCommand?.data.toJSON()),
     });
