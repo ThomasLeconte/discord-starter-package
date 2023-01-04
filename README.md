@@ -1,6 +1,7 @@
 # Discord starter package
 Little package for start a discord bot fastly and easily.  
-**Disclaimer:** This is not the best way, just my favorite way to build a discord bot. You can propose your own ideas with a pull request 😉
+**Disclaimer:** This is not the best way, just my favorite way to build a discord bot. You can propose your own ideas with a pull request 😉  
+[Click here to go on github repository](https://github.com/ThomasLeconte/discord-starter-package) !
 
 ## Summary
 [How use it ?](#how-use-it)  
@@ -15,7 +16,7 @@ Little package for start a discord bot fastly and easily.
 
 ## How use it
 
-**First of all, run `npm install discord-starter-package` to add discordjs and this package on your project**.  
+**First of all, run `npm install discord-starter-package` this package on your project**.  
 
 Then, you can init your bot instance with `init()` method :
 ```js
@@ -52,10 +53,10 @@ Have a look to all properties of an environment :
 - `webhooks`: List of webhooks that you want to use in your code.
 - `defaultCommandsDisabled`: List of default commands provided by this package that you want to disable. You can disable one of these commands: `help`, `disableCommand`, `feedback`, `ping`
 
-Finally, you can launch your discord bot with following command : `npm run bot`.
+Finally, you can launch your discord bot with `node main.js` or `ts-node main.ts` if you're using Typescript.
 
 ## Commands
-Your commands **must follow** a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command system should be like that :
+Your commands **must** be located in a `commands` folder at root of your project for being detected during bot initialization. Then, each command **must follow** a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command system should be like that :
 ```js
 module.exports = {
   name: '',
@@ -215,5 +216,5 @@ Errors are catched if webhook is not registered and reply with an error embed me
 
 ## Log
 By default, all environments have `autoLog` property on `false` value. But if you enable this property by changing it value to `true`, when a command (slash or not) will be executed, it will automatically log execution date, username, command name and command arguments.
-You can log by yourself if you want, just use `client.log('YourContent')` 😉 UWhen you log something, log is prefixed by default with current date. But you can personalize prefix by using `client.log('YourContent', 'YourPrefix')`
+You can log by yourself if you want, just use `client.log('YourContent')` 😉 When you log something, log is prefixed by default with current date. But you can personalize prefix by using `client.log('YourContent', 'YourPrefix')`
 
