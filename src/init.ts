@@ -1,5 +1,5 @@
-import { Bot, BotConfig } from './Bot';
 import { exec } from 'child_process';
+import { Bot, BotConfig } from './Bot';
 import { consoleError, consoleWarn } from './Tools/LogUtils';
 
 function init(config: BotConfig): Promise<Bot> {
@@ -82,12 +82,14 @@ function checkPackageVersion() {
         );
       }
 
-      const packageDiscordVersionDependency = packageJson.dependencies['discord.js'].replace('^', '');
-      const userDiscordVersionDependency = userPackageJson.dependencies['discord.js'].replace('^', '');
-      if (packageDiscordVersionDependency !== userDiscordVersionDependency) {
-        consoleWarn(
-          `🧨 You are using a different version of discord.js ! Please update discord.js package version to ${packageDiscordVersionDependency} for the best compatibility with ${packageJson.name}.`,
-        );
+      if(userPackageJson.dependencies['discord.js']){
+        const packageDiscordVersionDependency = packageJson.dependencies['discord.js'].replace('^', '');
+        const userDiscordVersionDependency = userPackageJson.dependencies['discord.js'].replace('^', '');
+        if (packageDiscordVersionDependency !== userDiscordVersionDependency) {
+          consoleWarn(
+            `🧨 You are using a different version of discord.js ! Please update discord.js package version to ${packageDiscordVersionDependency} for the best compatibility with ${packageJson.name}.`,
+          );
+        }
       }
     }
   });
