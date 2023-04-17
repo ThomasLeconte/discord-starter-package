@@ -1,6 +1,7 @@
-import { EmbedBuilder, Interaction } from 'discord.js';
+import { ButtonStyle, ComponentType, EmbedBuilder, Interaction, Message, User } from 'discord.js';
 import { Bot } from '../Bot';
-import { ErrorEmbed } from './EmbedMessage';
+import { EmbedMessage, ErrorEmbed } from './EmbedMessage';
+import { EmbedPaginator } from './EmbedPaginator';
 import { MessageFormatter } from './MessageFormatter';
 
 export class MessageHandler {
@@ -43,12 +44,35 @@ export class MessageHandler {
           }
           await (command as any)
             .execute(this.bot, msg, args)
-            .then((result: string | EmbedBuilder | MessageFormatter) => {
+            .then((result: string | EmbedBuilder | MessageFormatter | EmbedPaginator) => {
               if (result) {
-                if (command.private !== undefined && command.private === true) {
-                  msg.author.send(this.formatResponseByType(result));
+                const isPrivateResult = command.private !== undefined && command.private === true;
+                if (isPrivateResult) {
+                  msg.author.send(this.formatResponseByType(result)).then((message) => {
+                    if (result instanceof EmbedPaginator) {
+                      this.handlePaginationChanges(message, msg.author, result, isPrivateResult);
+                    }
+                  });
                 } else {
-                  this.bot.sendMessage(msg, result);
+                  if (typeof result === 'string') {
+                    msg.channel.send(result);
+                  } else {
+                    switch (result.constructor.name) {
+                      case 'EmbedBuilder':
+                        msg.channel.send({ embeds: [result as EmbedBuilder] });
+                        break;
+                      case 'MessageFormatter':
+                        msg.channel.send((result as MessageFormatter).format());
+                        break;
+                      case 'EmbedPaginator':
+                        if (result instanceof EmbedPaginator) {
+                          msg.channel.send(result.getResult() as any).then((message) => {
+                            this.handlePaginationChanges(message, msg.author, result, isPrivateResult);
+                          });
+                        }
+                        break;
+                    }
+                  }
                 }
 
                 if (this.bot.config.autoLog)
@@ -77,6 +101,66 @@ export class MessageHandler {
           );
         }
       }
+    });
+  }
+  handlePaginationChanges(message: Message, author: User, result: EmbedPaginator, isPrivateResult: boolean) {
+    const collector = message.createMessageComponentCollector({
+      time: 9999999,
+      componentType: ComponentType.Button,
+    });
+    collector.on('collect', (interactionResult) => {
+      console.log(interactionResult);
+      if (interactionResult.user.id === author.id) {
+        if (interactionResult.customId === result.getIDs().previousID) result.setPage(result.getPage() - 1);
+        if (interactionResult.customId === result.getIDs().nextID) result.setPage(result.getPage() + 1);
+
+        const startIndex =
+          result.getPage() === 1 ? 0 : result.getPage() * result.getItemsPerPage() - result.getItemsPerPage();
+        const endIndex = result.getPage() * result.getItemsPerPage();
+
+        const chunk = result.getContent().slice(startIndex, endIndex);
+        // console.log(page, startIndex, endIndex)
+
+        if (interactionResult.customId === result.getIDs().previousID) {
+          interactionResult.update(
+            new MessageFormatter()
+              .addEmbedMessage(
+                EmbedMessage(this.bot, result.getEmbedTitle(), result.getEmbedOptions().description, chunk),
+              )
+              .addButton(
+                result.getPreviousLabel(),
+                result.getPreviousIcon(),
+                ButtonStyle.Primary,
+                result.getIDs().previousID,
+                result.getPage() === 1,
+              )
+              .addButton(result.getNextLabel(), result.getNextIcon(), ButtonStyle.Primary, result.getIDs().nextID)
+              .format(),
+          );
+        } else if (interactionResult.customId === result.getIDs().nextID) {
+          interactionResult.update(
+            new MessageFormatter()
+              .addEmbedMessage(
+                EmbedMessage(this.bot, result.getEmbedTitle(), result.getEmbedOptions().description, chunk),
+              )
+              .addButton(
+                result.getPreviousLabel(),
+                result.getPreviousIcon(),
+                ButtonStyle.Primary,
+                result.getIDs().previousID,
+              )
+              .addButton(
+                result.getNextLabel(),
+                result.getNextIcon(),
+                ButtonStyle.Primary,
+                result.getIDs().nextID,
+                endIndex >= result.getContent().length,
+              )
+              .format(),
+          );
+        }
+      }
+      return;
     });
   }
 

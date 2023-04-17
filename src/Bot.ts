@@ -1,19 +1,19 @@
 import {
-  Client,
-  Collection,
-  ClientOptions,
-  Message,
-  Interaction,
-  WebhookClient,
-  EmbedBuilder,
   ApplicationCommandType,
+  Client,
+  ClientOptions,
+  Collection,
+  EmbedBuilder,
+  Interaction,
+  Message,
   SlashCommandBuilder,
+  WebhookClient,
 } from 'discord.js';
-import { MessageHandler } from './Tools/MessageHandler';
 import { CommandsRegister } from './Tools/CommandsRegister';
-import { MessageFormatter } from './Tools/MessageFormatter';
 import { InteractionHandler } from './Tools/InteractionHandler';
 import { Logger } from './Tools/LogUtils';
+import { MessageFormatter } from './Tools/MessageFormatter';
+import { MessageHandler } from './Tools/MessageHandler';
 
 export class Bot extends Client {
   commands: Collection<string, Command> = new Collection();

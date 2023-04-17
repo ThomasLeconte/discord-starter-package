@@ -82,7 +82,7 @@ function checkPackageVersion() {
         );
       }
 
-      if(userPackageJson.dependencies['discord.js']){
+      if (userPackageJson.dependencies['discord.js']) {
         const packageDiscordVersionDependency = packageJson.dependencies['discord.js'].replace('^', '');
         const userDiscordVersionDependency = userPackageJson.dependencies['discord.js'].replace('^', '');
         if (packageDiscordVersionDependency !== userDiscordVersionDependency) {

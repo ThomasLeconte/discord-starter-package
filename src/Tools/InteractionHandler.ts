@@ -1,6 +1,16 @@
-import { EmbedBuilder, Interaction, InteractionReplyOptions, InteractionType, ModalBuilder } from 'discord.js';
+import {
+  ButtonStyle,
+  ComponentType,
+  EmbedBuilder,
+  Interaction,
+  InteractionReplyOptions,
+  InteractionResponse,
+  InteractionType,
+  ModalBuilder,
+} from 'discord.js';
 import { Bot } from '../Bot';
-import { ErrorEmbed } from './EmbedMessage';
+import { EmbedMessage, ErrorEmbed } from './EmbedMessage';
+import { EmbedPaginator } from './EmbedPaginator';
 import { MessageFormatter } from './MessageFormatter';
 
 export class InteractionHandler {
@@ -70,10 +80,6 @@ export class InteractionHandler {
 
         const isPrivateResult = command.slashCommand.private !== undefined && command.slashCommand.private === true;
 
-        if (isPrivateResult) {
-          await interaction.deferReply({ ephemeral: true });
-        }
-
         const args = (interaction.options as any)._hoistedOptions;
         const channel = this.bot.channels.cache.find((c) => c.id === interaction.channelId);
         const guild = this.bot.guilds.cache.get(interaction.guildId);
@@ -86,6 +92,7 @@ export class InteractionHandler {
             if (args !== undefined && args.find((a: any) => a.type === 'USER')) {
               const mentionId = args.find((arg: any) => arg.type === 'USER').value;
               message = {
+                id: interaction.id,
                 guild: guild,
                 channel: channel,
                 member: member,
@@ -94,27 +101,39 @@ export class InteractionHandler {
                 interaction,
               };
             } else {
-              message = { guild: guild, channel: channel, member: member, author: member?.user, interaction };
+              message = {
+                id: interaction.id,
+                guild: guild,
+                channel: channel,
+                member: member,
+                author: member?.user,
+                interaction,
+              };
             }
           })
           .catch((err) => console.error(err));
         const newArgs = args !== undefined ? args.map((el: any) => el.value) : [];
         await (command as any)
           .execute(this.bot, message, newArgs)
-          .then((result: string | EmbedBuilder | MessageFormatter | ModalBuilder) => {
+          .then(async (result: string | EmbedBuilder | MessageFormatter | ModalBuilder | EmbedPaginator) => {
             if (result) {
               let finalResult = null;
               switch (result.constructor.name) {
+                case 'EmbedPaginator':
+                  if (result instanceof EmbedPaginator) {
+                    interaction
+                      .reply({ ...result.getResult(), ephemeral: isPrivateResult })
+                      .then((interactionResult) => {
+                        this.handlePaginationChanges(interactionResult, result as EmbedPaginator, isPrivateResult);
+                      });
+                  }
+                  break;
                 case 'String':
                 case 'EmbedBuilder':
                 case 'MessageFormatter':
                 case 'Object':
                   finalResult = this.formatResponseByType(result);
-                  if (isPrivateResult) {
-                    interaction.editReply(finalResult);
-                  } else {
-                    interaction.reply(finalResult);
-                  }
+                  interaction.reply({ ...finalResult, ephemeral: isPrivateResult });
                   break;
                 case 'ModalConstructor':
                 case 'ModalBuilder':
@@ -157,6 +176,67 @@ export class InteractionHandler {
           this.contextMenuEvent.get(interaction.commandName)?.(interaction);
         }
       }
+    });
+  }
+
+  handlePaginationChanges(interactionResponse: InteractionResponse, result: EmbedPaginator, isPrivateResult: boolean) {
+    const collector = interactionResponse.createMessageComponentCollector({
+      time: 9999999,
+      componentType: ComponentType.Button,
+    });
+    collector.on('collect', (interactionResult) => {
+      console.log(interactionResult);
+      if (interactionResult.user.id === interactionResponse.interaction.user.id) {
+        if (interactionResult.customId === result.getIDs().previousID) result.setPage(result.getPage() - 1);
+        if (interactionResult.customId === result.getIDs().nextID) result.setPage(result.getPage() + 1);
+
+        const startIndex =
+          result.getPage() === 1 ? 0 : result.getPage() * result.getItemsPerPage() - result.getItemsPerPage();
+        const endIndex = result.getPage() * result.getItemsPerPage();
+
+        const chunk = result.getContent().slice(startIndex, endIndex);
+        // console.log(page, startIndex, endIndex)
+
+        if (interactionResult.customId === result.getIDs().previousID) {
+          interactionResult.update(
+            new MessageFormatter()
+              .addEmbedMessage(
+                EmbedMessage(this.bot, result.getEmbedTitle(), result.getEmbedOptions().description, chunk),
+              )
+              .addButton(
+                result.getPreviousLabel(),
+                result.getPreviousIcon(),
+                ButtonStyle.Primary,
+                result.getIDs().previousID,
+                result.getPage() === 1,
+              )
+              .addButton(result.getNextLabel(), result.getNextIcon(), ButtonStyle.Primary, result.getIDs().nextID)
+              .format(),
+          );
+        } else if (interactionResult.customId === result.getIDs().nextID) {
+          interactionResult.update(
+            new MessageFormatter()
+              .addEmbedMessage(
+                EmbedMessage(this.bot, result.getEmbedTitle(), result.getEmbedOptions().description, chunk),
+              )
+              .addButton(
+                result.getPreviousLabel(),
+                result.getPreviousIcon(),
+                ButtonStyle.Primary,
+                result.getIDs().previousID,
+              )
+              .addButton(
+                result.getNextLabel(),
+                result.getNextIcon(),
+                ButtonStyle.Primary,
+                result.getIDs().nextID,
+                endIndex >= result.getContent().length,
+              )
+              .format(),
+          );
+        }
+      }
+      return;
     });
   }
 
