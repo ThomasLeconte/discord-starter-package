@@ -1,6 +1,6 @@
-import { ButtonStyle, ComponentType, EmbedBuilder, Interaction, Message, User } from 'discord.js';
+import { EmbedBuilder, Interaction } from 'discord.js';
 import { Bot } from '../Bot';
-import { EmbedMessage, ErrorEmbed } from '../Tools/EmbedMessage';
+import { ErrorEmbed } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
 import { MessageFormatter } from '../Tools/MessageFormatter';
 import { PaginationChangeHandler } from './PaginationChangeHandler';
@@ -39,7 +39,12 @@ export class MessageHandler {
           ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${commandName}" is disabled !`),
         );
       } else {
-        if (this.bot.commands.has(commandName)) {
+        if (!this.bot.commands.has(commandName)) {
+          this.bot.sendMessage(
+            msg,
+            ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${commandName}" does not exist.`),
+          );
+        } else {
           const command = this.bot.commands.get(commandName);
           if (!command) {
             console.error(`Command ${commandName} not found !`);
@@ -97,11 +102,6 @@ export class MessageHandler {
                 ),
               );
             });
-        } else {
-          this.bot.sendMessage(
-            msg,
-            ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${commandName}" does not exist.`),
-          );
         }
       }
     });

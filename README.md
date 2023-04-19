@@ -1,14 +1,19 @@
-# Discord starter package
-Little package for start a discord bot fastly and easily.  
-**Disclaimer:** This is not the best way, just my favorite way to build a discord bot. You can propose your own ideas with a pull request 😉  
-[Click here to go on github repository](https://github.com/ThomasLeconte/discord-starter-package) !
+<h1 align="center">Discord starter package</h1>
+<div align="center">
+<img src=https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg alt=html5 width="30" height="30"/>
+<img src=https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg alt=html5 width="30" height="30"/>
+</div>
+
+---
+
+Little package for start a discord bot fastly and easily, allowing you to focus on bot features.
 
 ## Summary
 [How use it ?](#how-use-it)  
 [Commands](#commands)  
 [Messages](#message)  
-[Embed pagination (**NEW**)](#embeds-pagination)  
-[Modal Constructor (**NEW**)](#modal-constructor)  
+[Embed pagination](#embeds-pagination)  
+[Modal Constructor](#modal-constructor)  
 [Message component event handling](#message-component-event-handling)  
 [Context menu interaction](#context-menu-interaction)  
 [Webhooks](#webhooks)  
@@ -130,7 +135,7 @@ for (let i = 0; i < 30; i++) {
 }
 
 // EmbedPaginator(client, message, content to show in embed, embed options, paginator options)
-new EmbedPaginator(client, message, content, { title: "Items" }, { itemsPerPage: 10, nextLabel: "Next page", previousLabel: "Previous page" })
+return new EmbedPaginator(client, message, content, { title: "Items" }, { itemsPerPage: 10, nextLabel: "Next page", previousLabel: "Previous page" })
 ```
 Pagination options are optionals. By default, there is 10 items per page, and pagination buttons looking like that :  
 ![Pagination default buttons](https://cdn.discordapp.com/attachments/784412126763548683/970297665134923796/unknown.png)
