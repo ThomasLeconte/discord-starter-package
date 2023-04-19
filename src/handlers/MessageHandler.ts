@@ -1,16 +1,19 @@
 import { ButtonStyle, ComponentType, EmbedBuilder, Interaction, Message, User } from 'discord.js';
 import { Bot } from '../Bot';
-import { EmbedMessage, ErrorEmbed } from './EmbedMessage';
-import { EmbedPaginator } from './EmbedPaginator';
-import { MessageFormatter } from './MessageFormatter';
+import { EmbedMessage, ErrorEmbed } from '../Tools/EmbedMessage';
+import { EmbedPaginator } from '../Tools/EmbedPaginator';
+import { MessageFormatter } from '../Tools/MessageFormatter';
+import { PaginationChangeHandler } from './PaginationChangeHandler';
 
 export class MessageHandler {
   private bot: Bot;
+  private paginationHandler: PaginationChangeHandler;
   private interactionsEvent: Map<string, (interaction: Interaction) => void>;
 
   constructor(bot: Bot) {
     this.bot = bot;
     this.interactionsEvent = new Map<string, (interaction: Interaction) => void>();
+    this.paginationHandler = new PaginationChangeHandler(this.bot);
   }
 
   newButtonEvent(buttonCustomId: string, callback: (interaction: Interaction) => void) {
@@ -50,7 +53,7 @@ export class MessageHandler {
                 if (isPrivateResult) {
                   msg.author.send(this.formatResponseByType(result)).then((message) => {
                     if (result instanceof EmbedPaginator) {
-                      this.handlePaginationChanges(message, msg.author, result, isPrivateResult);
+                      this.paginationHandler.handleMessageChanges(message, msg.author, result, isPrivateResult);
                     }
                   });
                 } else {
@@ -67,7 +70,7 @@ export class MessageHandler {
                       case 'EmbedPaginator':
                         if (result instanceof EmbedPaginator) {
                           msg.channel.send(result.getResult() as any).then((message) => {
-                            this.handlePaginationChanges(message, msg.author, result, isPrivateResult);
+                            this.paginationHandler.handleMessageChanges(message, msg.author, result, isPrivateResult);
                           });
                         }
                         break;
@@ -101,66 +104,6 @@ export class MessageHandler {
           );
         }
       }
-    });
-  }
-  handlePaginationChanges(message: Message, author: User, result: EmbedPaginator, isPrivateResult: boolean) {
-    const collector = message.createMessageComponentCollector({
-      time: 9999999,
-      componentType: ComponentType.Button,
-    });
-    collector.on('collect', (interactionResult) => {
-      console.log(interactionResult);
-      if (interactionResult.user.id === author.id) {
-        if (interactionResult.customId === result.getIDs().previousID) result.setPage(result.getPage() - 1);
-        if (interactionResult.customId === result.getIDs().nextID) result.setPage(result.getPage() + 1);
-
-        const startIndex =
-          result.getPage() === 1 ? 0 : result.getPage() * result.getItemsPerPage() - result.getItemsPerPage();
-        const endIndex = result.getPage() * result.getItemsPerPage();
-
-        const chunk = result.getContent().slice(startIndex, endIndex);
-        // console.log(page, startIndex, endIndex)
-
-        if (interactionResult.customId === result.getIDs().previousID) {
-          interactionResult.update(
-            new MessageFormatter()
-              .addEmbedMessage(
-                EmbedMessage(this.bot, result.getEmbedTitle(), result.getEmbedOptions().description, chunk),
-              )
-              .addButton(
-                result.getPreviousLabel(),
-                result.getPreviousIcon(),
-                ButtonStyle.Primary,
-                result.getIDs().previousID,
-                result.getPage() === 1,
-              )
-              .addButton(result.getNextLabel(), result.getNextIcon(), ButtonStyle.Primary, result.getIDs().nextID)
-              .format(),
-          );
-        } else if (interactionResult.customId === result.getIDs().nextID) {
-          interactionResult.update(
-            new MessageFormatter()
-              .addEmbedMessage(
-                EmbedMessage(this.bot, result.getEmbedTitle(), result.getEmbedOptions().description, chunk),
-              )
-              .addButton(
-                result.getPreviousLabel(),
-                result.getPreviousIcon(),
-                ButtonStyle.Primary,
-                result.getIDs().previousID,
-              )
-              .addButton(
-                result.getNextLabel(),
-                result.getNextIcon(),
-                ButtonStyle.Primary,
-                result.getIDs().nextID,
-                endIndex >= result.getContent().length,
-              )
-              .format(),
-          );
-        }
-      }
-      return;
     });
   }
 

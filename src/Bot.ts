@@ -10,10 +10,10 @@ import {
   WebhookClient,
 } from 'discord.js';
 import { CommandsRegister } from './Tools/CommandsRegister';
-import { InteractionHandler } from './Tools/InteractionHandler';
 import { Logger } from './Tools/LogUtils';
 import { MessageFormatter } from './Tools/MessageFormatter';
-import { MessageHandler } from './Tools/MessageHandler';
+import { InteractionHandler } from './handlers/InteractionHandler';
+import { MessageHandler } from './handlers/MessageHandler';
 
 export class Bot extends Client {
   commands: Collection<string, Command> = new Collection();
