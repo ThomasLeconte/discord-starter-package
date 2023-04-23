@@ -1,11 +1,4 @@
-import {
-  ButtonInteraction,
-  ButtonStyle,
-  ComponentType,
-  InteractionResponse,
-  Message,
-  User,
-} from 'discord.js';
+import { ButtonInteraction, ButtonStyle, ComponentType, InteractionResponse, Message, User } from 'discord.js';
 import { Bot } from '../Bot';
 import { EmbedMessage } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';

@@ -93,9 +93,9 @@ export class CommandsRegister {
       .then(async ({ commandsToCreate, commandsToUpdate, commandsToDelete }) => {
         for (const command of commandsToDelete) {
           await rest.delete(Routes.applicationCommand(bot.user!.id, command.id))
-          .then(() => {
-            console.log(`Deleted ${command.name} slash command`);
-          });
+          // .then(() => {
+          //   console.log(`Deleted ${command.name} slash command`);
+          // });
         }
 
         return { commandsToCreate, commandsToUpdate };
@@ -105,9 +105,9 @@ export class CommandsRegister {
           .put(Routes.applicationCommands(bot.user!.id), {
             body: commandsToUpdate.concat(commandsToCreate).map((c) => c.slashCommand?.data.toJSON()),
           })
-          .then((result) => {
-            console.log(`Updated ${(result as any[]).map(r => r.name.join(', '))} slash commands`);
-          });
+          // .then((result) => {
+          //   console.log(`Updated ${(result as any[]).map((r) => r.name.join(', '))} slash commands`);
+          // });
       });
   }
 }
