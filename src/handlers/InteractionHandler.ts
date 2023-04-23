@@ -1,15 +1,6 @@
-import {
-  ButtonStyle,
-  ComponentType,
-  EmbedBuilder,
-  Interaction,
-  InteractionReplyOptions,
-  InteractionResponse,
-  InteractionType,
-  ModalBuilder,
-} from 'discord.js';
+import { EmbedBuilder, Interaction, InteractionReplyOptions, InteractionType, ModalBuilder } from 'discord.js';
 import { Bot } from '../Bot';
-import { EmbedMessage, ErrorEmbed } from '../Tools/EmbedMessage';
+import { ErrorEmbed } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
 import { MessageFormatter } from '../Tools/MessageFormatter';
 import { PaginationChangeHandler } from './PaginationChangeHandler';

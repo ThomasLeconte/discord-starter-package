@@ -2,15 +2,14 @@ import {
   ButtonInteraction,
   ButtonStyle,
   ComponentType,
-  InteractionCollector,
   InteractionResponse,
   Message,
   User,
 } from 'discord.js';
+import { Bot } from '../Bot';
+import { EmbedMessage } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
 import { MessageFormatter } from '../Tools/MessageFormatter';
-import { EmbedMessage } from '../Tools/EmbedMessage';
-import { Bot } from '../Bot';
 
 export class PaginationChangeHandler {
   private bot: Bot;

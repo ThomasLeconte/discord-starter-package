@@ -73,10 +73,41 @@ export class CommandsRegister {
     if (!bot.user) throw new Error('Bot user not found !');
 
     const rest = new REST({ version: '10' }).setToken(bot.config.token);
-    // Delete all commands before register new ones
-    await rest.put(Routes.applicationCommands(bot.user.id), { body: [] });
-    return await rest.put(Routes.applicationCommands(bot.user.id), {
-      body: commands.map((c) => c.slashCommand?.data.toJSON()),
-    });
+    return rest
+      .get(Routes.applicationCommands(bot.user.id))
+      .then(async (existingCommands: unknown) => {
+        const commandsToCreate = commands.filter(
+          (c) => !(existingCommands as any[]).find((e: any) => e.name === c.name.toLowerCase()),
+        );
+        const commandsToUpdate = commands.filter(
+          (c) =>
+            c.name.toLowerCase() ===
+            (existingCommands as any[]).find((e: any) => e.name === c.name.toLowerCase())?.name,
+        );
+        const commandsToDelete = (existingCommands as any[]).filter(
+          (e: any) => !commands.find((c) => c.name.toLowerCase() === e.name),
+        );
+
+        return { commandsToCreate, commandsToUpdate, commandsToDelete };
+      })
+      .then(async ({ commandsToCreate, commandsToUpdate, commandsToDelete }) => {
+        for (const command of commandsToDelete) {
+          await rest.delete(Routes.applicationCommand(bot.user!.id, command.id))
+          .then(() => {
+            console.log(`Deleted ${command.name} slash command`);
+          });
+        }
+
+        return { commandsToCreate, commandsToUpdate };
+      })
+      .then(async ({ commandsToCreate, commandsToUpdate }) => {
+        await rest
+          .put(Routes.applicationCommands(bot.user!.id), {
+            body: commandsToUpdate.concat(commandsToCreate).map((c) => c.slashCommand?.data.toJSON()),
+          })
+          .then((result) => {
+            console.log(`Updated ${(result as any[]).map(r => r.name.join(', '))} slash commands`);
+          });
+      });
   }
 }
