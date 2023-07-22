@@ -5,67 +5,79 @@ import { Bot, Command } from '../Bot';
 
 export class CommandsRegister {
   static async registerCommands(bot: Bot) {
-    const commandsPath = `${require.main?.path}/commands`;
-    const defaultCommandsPath = path.join(__dirname, '../commands');
+    const commandsPathPrefix = `${require.main?.path}/`;
+    const defaultCommandsPathPrefix = path.join(__dirname, '../');
 
-    if (fs.existsSync(commandsPath)) {
-      const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
-      const defaultCommandFiles = fs.readdirSync(defaultCommandsPath).filter((file) => file.endsWith('.js'));
-      const commandsInitialized = [] as any[];
-      const slashCommandsToRegister = [] as Command[];
+    const commandFolders = bot.config.commandFolders || ['commands']; // magic value, should be moved to a constant
+    const commandsInitialized = [] as any[];
+    const slashCommandsToRegister = [] as Command[];
 
-      // DEFAULT COMMANDS OF LIB
-      for (const file of defaultCommandFiles) {
-        if (bot.config.defaultCommandsDisabled!.includes(file.replace('.js', ''))) continue;
-        const command = new Command(require(`${defaultCommandsPath}/${file}`));
-        bot.commands.set(command.name.toLowerCase(), command);
-        if (command.slashCommand) {
-          if (command.slashCommand.data !== undefined) {
+    // LOOP THROUGH COMMAND_FOLDERS
+    for (const commandFolder of commandFolders) {
+      const commandsPath = commandsPathPrefix + commandFolder;
+      const defaultCommandsPath = defaultCommandsPathPrefix + commandFolder;
+
+      if (fs.existsSync(commandsPath)) {
+        const commandFiles = fs
+          .readdirSync(commandsPath)
+          .filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
+        const defaultCommandFiles = fs.readdirSync(defaultCommandsPath).filter((file) => file.endsWith('.js'));
+
+        // DEFAULT COMMANDS OF LIB
+        for (const file of defaultCommandFiles) {
+          if (bot.config.defaultCommandsDisabled!.includes(file.replace('.js', ''))) continue;
+          const command = new Command(require(`${defaultCommandsPath}/${file}`));
+          bot.commands.set(command.name.toLowerCase(), command);
+          if (command.slashCommand) {
+            if (command.slashCommand.data !== undefined) {
+              slashCommandsToRegister.push(command);
+            }
+          }
+          commandsInitialized.push({
+            name: command.name,
+            slash: command.slashCommand !== undefined,
+          });
+        }
+
+        // CUSTOM COMMANDS OF USER
+        for (const file of commandFiles) {
+          const command = new Command(require(`${commandsPath}/${file}`));
+
+          bot.commands.set(command.name.toLowerCase(), command);
+          if (command.slashCommand !== undefined) {
             slashCommandsToRegister.push(command);
           }
+          commandsInitialized.push({
+            name: command.name,
+            slash: command.slashCommand !== undefined,
+          });
         }
-        commandsInitialized.push({
-          name: command.name,
-          slash: command.slashCommand !== undefined,
-        });
+      } else {
+        console.log(
+          `./${commandFolder} folder not found! Please create it or remove it from your commandFolders config!`,
+        );
       }
-
-      // CUSTOM COMMANDS OF USER
-      for (const file of commandFiles) {
-        const command = new Command(require(`${commandsPath}/${file}`));
-
-        bot.commands.set(command.name.toLowerCase(), command);
-        if (command.slashCommand !== undefined) {
-          slashCommandsToRegister.push(command);
-        }
-        commandsInitialized.push({
-          name: command.name,
-          slash: command.slashCommand !== undefined,
-        });
-      }
-
-      // REGISTER SLASH COMMANDS
-      return this.registerSlashCommands(bot, slashCommandsToRegister)
-        .then(() => {
-          console.log('\x1b[36m', '# - - - - COMMANDS - - - - #');
-          console.log(
-            `# Slash commands : ${commandsInitialized
-              .filter((c) => c.slash)
-              .map((c) => bot.config.prefix + c.name)
-              .join(', ')}`,
-          );
-          console.log(
-            `# Basic commands : ${commandsInitialized
-              .filter((c) => !c.slash)
-              .map((c) => bot.config.prefix + c.name)
-              .join(', ')}`,
-          );
-          console.log('# - - - - COMMANDS - - - - #\n', '\x1b[0m');
-        })
-        .catch((err) => console.error(err));
-    } else {
-      throw new Error('./commands folder not found ! Please create it and put your commands files inside it.');
     }
+
+    // REGISTER SLASH COMMANDS
+    return this.registerSlashCommands(bot, slashCommandsToRegister)
+      .then(() => {
+        console.log('\x1b[36m', '# - - - - COMMANDS - - - - #');
+        console.log(
+          `# Slash commands : ${commandsInitialized
+            .filter((c) => c.slash)
+            .map((c) => bot.config.prefix + c.name)
+            .join(', ')}`,
+        );
+        console.log(
+          `# Basic commands : ${commandsInitialized
+            .filter((c) => !c.slash)
+            .map((c) => bot.config.prefix + c.name)
+            .join(', ')}`,
+        );
+        console.log('# - - - - COMMANDS - - - - #\n', '\x1b[0m');
+      })
+      .catch((err) => console.error(err));
   }
 
   static async registerSlashCommands(bot: Bot, commands: Command[]) {
@@ -92,7 +104,7 @@ export class CommandsRegister {
       })
       .then(async ({ commandsToCreate, commandsToUpdate, commandsToDelete }) => {
         for (const command of commandsToDelete) {
-          await rest.delete(Routes.applicationCommand(bot.user!.id, command.id))
+          await rest.delete(Routes.applicationCommand(bot.user!.id, command.id));
           // .then(() => {
           //   console.log(`Deleted ${command.name} slash command`);
           // });
@@ -101,13 +113,12 @@ export class CommandsRegister {
         return { commandsToCreate, commandsToUpdate };
       })
       .then(async ({ commandsToCreate, commandsToUpdate }) => {
-        await rest
-          .put(Routes.applicationCommands(bot.user!.id), {
-            body: commandsToUpdate.concat(commandsToCreate).map((c) => c.slashCommand?.data.toJSON()),
-          })
-          // .then((result) => {
-          //   console.log(`Updated ${(result as any[]).map((r) => r.name.join(', '))} slash commands`);
-          // });
+        await rest.put(Routes.applicationCommands(bot.user!.id), {
+          body: commandsToUpdate.concat(commandsToCreate).map((c) => c.slashCommand?.data.toJSON()),
+        });
+        // .then((result) => {
+        //   console.log(`Updated ${(result as any[]).map((r) => r.name.join(', '))} slash commands`);
+        // });
       });
   }
 }

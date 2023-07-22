@@ -195,6 +195,7 @@ export type BotConfig = {
   options: ClientOptions;
   adminRole?: string;
   webhooks?: WebHookConfig[];
+  commandFolders?: string[];
 };
 
 export class Command {
