@@ -55,6 +55,10 @@ function checkConfiguration(config: BotConfig): Promise<BotConfig> {
   config.autoLog = config.autoLog || false;
   config.adminRole = config.adminRole || 'Admin';
 
+  if (!config.commandFolders) {
+    consoleWarn("⚠️ No commandFolders set, defaulting to ['commands']");
+  }
+
   return Promise.resolve(config);
 }
 

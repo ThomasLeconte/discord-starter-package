@@ -47,6 +47,7 @@ This method take many options :
   "adminRole": "admin", //optional
   "options": {}, //ClientOptions instance
   "webhooks": [], //optional
+  "commandFolders": [], //optional
   "defaultCommandsDisabled": [] //optional, to disable all use: ["disableCommand", "feedback", "help", "ping"]
 }
 ```
@@ -63,11 +64,10 @@ Have a look to all properties of an environment :
 - `defaultCommandsDisabled`: List of default commands provided by this package that you want to disable. You can disable one of these commands: `help`, `disableCommand`, `feedback`, `ping`
 
 Finally, you can launch your discord bot with `node main.js` or `ts-node main.ts` if you're using Typescript.
+- `commandFolders`: Folders the bot loads commands from, relative to your root folder. If unset defaults to `['commands']`
 
 ## Commands
-
-Your commands **must** be located in a `commands` folder at root of your project for being detected during bot initialization. Then, each command **must follow** a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command system should be like that :
-
+Your commands must either be located in a `commands` folder at root of your project, or in folders configured through the `commandFolders` array given on initialization, to be detected during bot initialization. Then, each command **must follow** a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command system should be like that :
 ```js
 module.exports = {
   name: '',
