@@ -6,38 +6,20 @@ import { Bot, Command } from '../Bot';
 export class CommandsRegister {
   static async registerCommands(bot: Bot) {
     const commandsPathPrefix = `${require.main?.path}/`;
-    const defaultCommandsPathPrefix = path.join(__dirname, '../');
-
     const commandFolders = bot.config.commandFolders || ['commands']; // magic value, should be moved to a constant
     const commandsInitialized = [] as any[];
     const slashCommandsToRegister = [] as Command[];
 
+    this.initDefaultCommands(bot, commandsInitialized, slashCommandsToRegister);
+
     // LOOP THROUGH COMMAND_FOLDERS
     for (const commandFolder of commandFolders) {
       const commandsPath = commandsPathPrefix + commandFolder;
-      const defaultCommandsPath = defaultCommandsPathPrefix + commandFolder;
 
       if (fs.existsSync(commandsPath)) {
         const commandFiles = fs
           .readdirSync(commandsPath)
           .filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
-        const defaultCommandFiles = fs.readdirSync(defaultCommandsPath).filter((file) => file.endsWith('.js'));
-
-        // DEFAULT COMMANDS OF LIB
-        for (const file of defaultCommandFiles) {
-          if (bot.config.defaultCommandsDisabled!.includes(file.replace('.js', ''))) continue;
-          const command = new Command(require(`${defaultCommandsPath}/${file}`));
-          bot.commands.set(command.name.toLowerCase(), command);
-          if (command.slashCommand) {
-            if (command.slashCommand.data !== undefined) {
-              slashCommandsToRegister.push(command);
-            }
-          }
-          commandsInitialized.push({
-            name: command.name,
-            slash: command.slashCommand !== undefined,
-          });
-        }
 
         // CUSTOM COMMANDS OF USER
         for (const file of commandFiles) {
@@ -80,7 +62,30 @@ export class CommandsRegister {
       .catch((err) => console.error(err));
   }
 
-  static async registerSlashCommands(bot: Bot, commands: Command[]) {
+  private static initDefaultCommands(bot: Bot, commandsInitialized: any[], slashCommandsToRegister: Command[]) {
+    const defaultCommandsPathPrefix = path.join(__dirname, '../');
+    const defaultCommandsPath = defaultCommandsPathPrefix + 'commands';
+
+    const defaultCommandFiles = fs.readdirSync(defaultCommandsPath).filter((file) => file.endsWith('.js'));
+
+    // DEFAULT COMMANDS OF LIB
+    for (const file of defaultCommandFiles) {
+      if (bot.config.defaultCommandsDisabled!.includes(file.replace('.js', ''))) continue;
+      const command = new Command(require(`${defaultCommandsPath}/${file}`));
+      bot.commands.set(command.name.toLowerCase(), command);
+      if (command.slashCommand) {
+        if (command.slashCommand.data !== undefined) {
+          slashCommandsToRegister.push(command);
+        }
+      }
+      commandsInitialized.push({
+        name: command.name,
+        slash: command.slashCommand !== undefined,
+      });
+    }
+  }
+
+  private static async registerSlashCommands(bot: Bot, commands: Command[]) {
     if (!bot.config.token) throw new Error('Token not found !');
     if (!bot.user) throw new Error('Bot user not found !');
 
