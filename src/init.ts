@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { Bot, BotConfig } from './Bot';
 import { consoleError, consoleWarn } from './Tools/LogUtils';
+import { lt } from 'es-semver';
 
 function init(config: BotConfig): Promise<Bot> {
   // const bot = new Bot(config);
@@ -71,10 +72,10 @@ function checkPackageVersion() {
       return;
     }
     if (stdout) {
-      const npmPackageVersion = stdout.trim();
+      const npmPackageVersion = stdout.trim().replace('^', '');
       const userPackageVersion = userPackageJson.dependencies[packageJson.name].replace('^', '');
 
-      if (npmPackageVersion !== userPackageVersion) {
+      if (lt(userPackageVersion, npmPackageVersion)) {
         consoleWarn(
           `⚠️ You are using an outdated version of ${
             packageJson.name
@@ -85,7 +86,7 @@ function checkPackageVersion() {
       if (userPackageJson.dependencies['discord.js']) {
         const packageDiscordVersionDependency = packageJson.dependencies['discord.js'].replace('^', '');
         const userDiscordVersionDependency = userPackageJson.dependencies['discord.js'].replace('^', '');
-        if (packageDiscordVersionDependency !== userDiscordVersionDependency) {
+        if (lt(userDiscordVersionDependency, packageDiscordVersionDependency)) {
           consoleWarn(
             `🧨 You are using a different version of discord.js ! Please update discord.js package version to ${packageDiscordVersionDependency} for the best compatibility with ${packageJson.name}.`,
           );
