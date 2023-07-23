@@ -53,7 +53,7 @@ export class CommandsRegister {
         console.log(
           `# Slash commands : ${commandsInitialized
             .filter((c) => c.slash)
-            .map((c) => bot.config.prefix + c.name)
+            .map((c) => c.name)
             .join(', ')}`,
         );
         console.log(
