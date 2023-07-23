@@ -48,16 +48,15 @@ function checkConfiguration(config: BotConfig): Promise<BotConfig> {
   if (!config.adminRole)
     consoleWarn("⚠️ No adminRole provided in the configuration, using default adminRole : 'Admin'");
 
+  if (!config.commandFolders) consoleWarn("⚠️ No commandFolders set, defaulting to ['commands']");
+
   config.name = config.name || 'Discord Bot';
   config.options = config.options || { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] };
   config.prefix = config.prefix || '/';
   config.defaultCommandsDisabled = config.defaultCommandsDisabled || [];
   config.autoLog = config.autoLog || false;
   config.adminRole = config.adminRole || 'Admin';
-
-  if (!config.commandFolders) {
-    consoleWarn("⚠️ No commandFolders set, defaulting to ['commands']");
-  }
+  config.commandFolders = config.commandFolders || ['commands'];
 
   return Promise.resolve(config);
 }

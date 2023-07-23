@@ -2,13 +2,18 @@ import { REST, Routes } from 'discord.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Bot, Command } from '../Bot';
+import { consoleWarn } from './LogUtils';
 
 export class CommandsRegister {
   static async registerCommands(bot: Bot) {
     const commandsPathPrefix = `${require.main?.path}/`;
-    const commandFolders = bot.config.commandFolders || ['commands']; // magic value, should be moved to a constant
+    const commandFolders = bot.config.commandFolders;
     const commandsInitialized = [] as any[];
     const slashCommandsToRegister = [] as Command[];
+
+    if (!commandFolders) {
+      throw new Error('No commandFolders config value found');
+    }
 
     this.initDefaultCommands(bot, commandsInitialized, slashCommandsToRegister);
 
@@ -35,8 +40,8 @@ export class CommandsRegister {
           });
         }
       } else {
-        console.log(
-          `./${commandFolder} folder not found! Please create it or remove it from your commandFolders config!`,
+        consoleWarn(
+          `⚠️ ./${commandFolder} folder not found! Please create it or remove it from your commandFolders config!`,
         );
       }
     }
@@ -63,8 +68,7 @@ export class CommandsRegister {
   }
 
   private static initDefaultCommands(bot: Bot, commandsInitialized: any[], slashCommandsToRegister: Command[]) {
-    const defaultCommandsPathPrefix = path.join(__dirname, '../');
-    const defaultCommandsPath = defaultCommandsPathPrefix + 'commands';
+    const defaultCommandsPath = path.join(__dirname, '../', 'commands');
 
     const defaultCommandFiles = fs.readdirSync(defaultCommandsPath).filter((file) => file.endsWith('.js'));
 
