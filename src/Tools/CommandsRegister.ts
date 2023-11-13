@@ -28,7 +28,8 @@ export class CommandsRegister {
 
         // CUSTOM COMMANDS OF USER
         for (const file of commandFiles) {
-          const command = new Command(require(`${commandsPath}/${file}`));
+          const filePath = `${commandsPath}/${file}`;
+          const command = new Command(require(filePath), filePath);
 
           bot.commands.set(command.name.toLowerCase(), command);
           if (command.slashCommand !== undefined) {
@@ -75,7 +76,8 @@ export class CommandsRegister {
     // DEFAULT COMMANDS OF LIB
     for (const file of defaultCommandFiles) {
       if (bot.config.defaultCommandsDisabled!.includes(file.replace('.js', ''))) continue;
-      const command = new Command(require(`${defaultCommandsPath}/${file}`));
+      const filePath = `${defaultCommandsPath}/${file}`;
+      const command = new Command(require(filePath), filePath);
       bot.commands.set(command.name.toLowerCase(), command);
       if (command.slashCommand) {
         if (command.slashCommand.data !== undefined) {

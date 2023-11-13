@@ -207,8 +207,10 @@ export class Command {
   // alias?: string[];
   execute: void;
   private?: boolean;
+  filePath: string;
 
-  constructor(data: any) {
+  constructor(data: any, filePath: string) {
+    this.filePath = filePath;
     this.private = data.private !== undefined ? data.private : false;
     if (data.slashCommand !== undefined) {
       if (data.slashCommand.data === undefined) {
