@@ -1,5 +1,5 @@
 import { Message, SlashCommandBuilder } from 'discord.js';
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 import { ErrorEmbed, SuccessEmbed } from '../Tools/EmbedMessage';
 import { MessageFormatter } from '../Tools/MessageFormatter';
 

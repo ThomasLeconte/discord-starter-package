@@ -9,16 +9,9 @@ import {
   StringSelectMenuBuilder,
   UserSelectMenuBuilder,
 } from 'discord.js';
+import { SelectMenuType } from '../enums';
+import { SelectOption } from '../types';
 
-export enum SelectMenuType {
-  STRING,
-  ROLE,
-  USER,
-  MENTIONABLE,
-  CHANNEL,
-}
-
-export type SelectOption = { label: string; description?: string; value: string };
 export class MessageFormatter {
   private embeds: EmbedBuilder[];
   private content?: string;

@@ -1,5 +1,5 @@
 import { APIEmbedField, EmbedBuilder } from 'discord.js';
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 
 /**
  *

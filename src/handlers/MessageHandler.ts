@@ -1,5 +1,5 @@
 import { EmbedBuilder, Interaction } from 'discord.js';
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 import { ErrorEmbed } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
 import { MessageFormatter } from '../Tools/MessageFormatter';

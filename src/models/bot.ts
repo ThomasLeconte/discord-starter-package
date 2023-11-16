@@ -1,19 +1,35 @@
 import {
   ApplicationCommandType,
   Client,
-  ClientOptions,
   Collection,
   EmbedBuilder,
   Interaction,
   Message,
-  SlashCommandBuilder,
   WebhookClient,
 } from 'discord.js';
-import { CommandsRegister } from './Tools/CommandsRegister';
-import { Logger } from './Tools/LogUtils';
-import { MessageFormatter } from './Tools/MessageFormatter';
-import { InteractionHandler } from './handlers/InteractionHandler';
-import { MessageHandler } from './handlers/MessageHandler';
+import { CommandsRegister } from '../Tools/CommandsRegister';
+import { Logger } from '../Tools/LogUtils';
+import { MessageFormatter } from '../Tools/MessageFormatter';
+import { InteractionHandler } from '../handlers/InteractionHandler';
+import { MessageHandler } from '../handlers/MessageHandler';
+import { EventType } from '../enums';
+import { Command } from './command';
+import { BotConfig } from '../types';
+
+export class BotInstance {
+  private static _instance: Bot;
+
+  static setInstance(bot: Bot) {
+    this._instance = bot;
+  }
+
+  static getInstance() {
+    if (!this._instance) {
+      throw Error('Any instance, set it before use it!');
+    }
+    return this._instance;
+  }
+}
 
 export class Bot extends Client {
   commands: Collection<string, Command> = new Collection();
@@ -174,76 +190,5 @@ export class Bot extends Client {
         this.interactionHandler.newModalEvent(key, callback);
         break;
     }
-  }
-}
-
-export enum EventType {
-  BUTTON_EVENT = 'BUTTON',
-  SELECT_MENU_EVENT = 'SELECT_MENU',
-  CONTEXT_MENU_EVENT = 'CONTEXT_MENU',
-  MODAL_SUBMIT_EVENT = 'MODAL_SUBMIT',
-}
-
-export type SlashCommandConfig = { data: SlashCommandBuilder; private?: boolean };
-export type WebHookConfig = { name: string; url: string };
-export type BotConfig = {
-  name?: string;
-  token: string;
-  prefix?: string;
-  defaultCommandsDisabled?: string[];
-  autoLog?: boolean;
-  options: ClientOptions;
-  adminRole?: string;
-  webhooks?: WebHookConfig[];
-  commandFolders?: string[];
-};
-
-export class Command {
-  name: string;
-  description: string;
-  usage: string;
-  slashCommand?: SlashCommandConfig;
-  admin: boolean;
-  // alias?: string[];
-  execute: void;
-  private?: boolean;
-  filePath: string;
-
-  constructor(data: any, filePath: string) {
-    this.filePath = filePath;
-    this.private = data.private !== undefined ? data.private : false;
-    if (data.slashCommand !== undefined) {
-      if (data.slashCommand.data === undefined) {
-        throw new Error(
-          `You must specify data property to your "${data.name}" slash command. It must be a SlashCommandBuilder object.`,
-        );
-      } else {
-        this.slashCommand = data.slashCommand !== undefined ? data.slashCommand : null;
-      }
-    }
-
-    if (
-      data.name !== undefined &&
-      data.description !== undefined &&
-      data.usage !== undefined &&
-      data.admin !== undefined &&
-      data.execute !== undefined
-    ) {
-      this.name = data.name;
-      this.description = data.description;
-      this.usage = data.usage;
-      this.admin = data.admin;
-      // this.alias = data.alias;
-      this.execute = data.execute;
-    } else {
-      throw new Error(
-        `You must specify name, description, usage, admin property and execute function to your "${data.name}" command.`,
-      );
-    }
-    // if(this.alias){
-    //   if(!Array.isArray(this.alias)){
-    //     throw new Error(`Alias property of your "${this.name}" command must be an array !`);
-    //   }
-    // }
   }
 }
