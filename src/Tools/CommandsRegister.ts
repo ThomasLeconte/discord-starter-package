@@ -91,7 +91,7 @@ export class CommandsRegister {
           const isClassCommand = require(filePath) instanceof AbstractCommand;
 
           const command = isClassCommand
-            ? this.mapToCommand(new (require(filePath))())
+            ? this.mapToCommand(new (await import(filePath)).default)
             : new Command(require(filePath), filePath);
 
           bot.commands.set(command.name.toLowerCase(), command);
