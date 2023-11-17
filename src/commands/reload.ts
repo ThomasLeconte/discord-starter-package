@@ -12,7 +12,7 @@ module.exports = {
       .setName('reload')
       .setDescription('Reload one or all commands')
       .addStringOption((option) =>
-        option.setvbName('name').setDescription("Command's name you want to reload").setRequired(false),
+        option.setName('name').setDescription("Command's name you want to reload").setRequired(false),
       ),
     private: true,
   },
@@ -30,5 +30,5 @@ module.exports = {
         `**${commandName}** cannot be reloaded. Error code : ${err}`,
       );
     }
-  }
+  },
 };
