@@ -108,8 +108,7 @@ export class InteractionHandler {
           })
           .catch((err) => console.error(err));
         const newArgs = args !== undefined ? args.map((el: any) => el.value) : [];
-        await (command as any)
-          .execute(this.bot, message, newArgs)
+        Promise.resolve((command as any).execute(this.bot, message, newArgs))
           .then(async (result: string | EmbedBuilder | MessageFormatter | ModalBuilder | EmbedPaginator) => {
             if (result) {
               let finalResult = null;

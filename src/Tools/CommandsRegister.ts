@@ -13,8 +13,10 @@ export class CommandsRegister {
       console.log("Reloading command '" + command.name + "'...");
       delete require.cache[require.resolve(command.filePath)];
 
-      const newCommand = command.isClassCommand
-        ? this.mapToCommand(new (require(command.filePath))())
+      const isClassCommand = typeof require(command.filePath).default === 'function';
+
+      const newCommand = isClassCommand
+        ? this.mapToCommand(new (require(command.filePath).default)())
         : new Command(require(command.filePath), command.filePath);
 
       bot.commands.delete(command.name.toLowerCase());
@@ -88,10 +90,10 @@ export class CommandsRegister {
         for (const file of commandFiles) {
           const filePath = `${commandsPath}/${file}`;
 
-          const isClassCommand = require(filePath) instanceof AbstractCommand;
+          const isClassCommand = typeof require(filePath).default === 'function';
 
           const command = isClassCommand
-            ? this.mapToCommand(new (await import(filePath)).default)
+            ? this.mapToCommand(new (require(filePath).default)())
             : new Command(require(filePath), filePath);
 
           bot.commands.set(command.name.toLowerCase(), command);

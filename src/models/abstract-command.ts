@@ -17,7 +17,7 @@ export default abstract class AbstractCommand {
   getMeta(): any {
     return {
       name: this.name,
-      desc: this.desc,
+      description: this.desc,
       usage: this.usage,
       admin: this.admin,
       slashCommand: this.slashCommand,
