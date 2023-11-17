@@ -8,20 +8,14 @@ import { Command } from '../models/command';
 import { ErrorEmbed, SuccessEmbed } from './EmbedMessage';
 
 export class CommandsRegister {
-
   static reloadCommand(bot: Bot, commandName: string) {
     const reload = (command: Command) => {
       console.log("Reloading command '" + command.name + "'...");
       delete require.cache[require.resolve(command.filePath)];
 
-      if(command.isClassCommand){
-        const newCommand = this.mapToCommand(new (require(command.filePath))())
-        bot.commands.delete(command.name.toLowerCase());
-        bot.commands.set(command.name.toLowerCase(), newCommand);
-        return;
-      }
-
-      const newCommand = require(command.filePath);
+      const newCommand = command.isClassCommand
+        ? this.mapToCommand(new (require(command.filePath))())
+        : new Command(require(command.filePath), command.filePath);
 
       bot.commands.delete(command.name.toLowerCase());
       bot.commands.set(command.name.toLowerCase(), newCommand);

@@ -12,7 +12,7 @@ module.exports = {
       .setName('reload')
       .setDescription('Reload one or all commands')
       .addStringOption((option) =>
-        option.setName('name').setDescription("Command's name you want to reload").setRequired(false),
+        option.setvbName('name').setDescription("Command's name you want to reload").setRequired(false),
       ),
     private: true,
   },
@@ -23,8 +23,12 @@ module.exports = {
 
     try {
       return CommandsRegister.reloadCommand(client, commandName);
-    } catch(err){
-      return ErrorEmbed(client, `Error during command reload`, `**${commandName}** cannot be reloaded. Error code : ${err}`);
+    } catch (err) {
+      return ErrorEmbed(
+        client,
+        `Error during command reload`,
+        `**${commandName}** cannot be reloaded. Error code : ${err}`,
+      );
     }
-  },
+  }
 };

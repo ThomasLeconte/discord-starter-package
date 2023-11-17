@@ -24,7 +24,7 @@ export default abstract class AbstractCommand {
       private: this.private,
       filePath: this.filePath,
       execute: this.execute,
-      isClassCommand: true
+      isClassCommand: true,
     };
   }
 
