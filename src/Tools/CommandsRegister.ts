@@ -140,7 +140,7 @@ export class CommandsRegister {
 
     // DEFAULT COMMANDS OF LIB
     for (const file of defaultCommandFiles) {
-      if (bot.config.defaultCommandsDisabled!.includes(file.replace('.js', ''))) continue;
+      if (bot.config.commandsDisabled!.includes(file.replace('.js', ''))) continue;
       const filePath = `${defaultCommandsPath}/${file}`;
       const command = new Command(require(filePath), filePath);
       bot.commands.set(command.name.toLowerCase(), command);

@@ -10,7 +10,7 @@ export type BotConfig = {
   name?: string;
   token: string;
   prefix?: string;
-  defaultCommandsDisabled?: string[];
+  commandsDisabled?: string[];
   autoLog?: boolean;
   options: ClientOptions;
   adminRole?: string;

@@ -58,6 +58,11 @@ export class Bot extends Client {
 
   private initializeTools() {
     CommandsRegister.registerCommands(this).then(() => {
+      if(this.config.commandsDisabled){
+        this.config.commandsDisabled.forEach((command) => {
+          this.disabledCommands.set(command, true);
+        });
+      }
       this.interactionHandler = new InteractionHandler(this);
       this.interactionHandler.listen();
       new MessageHandler(this).listen();
