@@ -99,7 +99,7 @@ export class Bot extends Client {
   }
 
   name() {
-    return this.config.name;
+    return this.config.name || this.user?.username;
   }
 
   /**

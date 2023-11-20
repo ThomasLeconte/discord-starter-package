@@ -1,4 +1,12 @@
-import { EmbedBuilder, Interaction, InteractionReplyOptions, InteractionType, ModalBuilder } from 'discord.js';
+import {
+  EmbedBuilder,
+  GuildMemberRoleManager,
+  Interaction,
+  InteractionReplyOptions,
+  InteractionType,
+  ModalBuilder,
+  Role,
+} from 'discord.js';
 import { Bot } from '../models/bot';
 import { ErrorEmbed } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
@@ -73,42 +81,51 @@ export class InteractionHandler {
           return;
         }
 
-        const isPrivateResult = command.slashCommand.private !== undefined && command.slashCommand.private === true;
+        const isPrivateResult = command.private !== undefined && command.private === true;
 
         const args = (interaction.options as any)._hoistedOptions;
-        const channel = this.bot.channels.cache.find((c) => c.id === interaction.channelId);
-        const guild = this.bot.guilds.cache.get(interaction.guildId);
-        if (!guild) return;
-        let message: any = null;
-        await guild.members
-          .fetch()
-          .then((members) => {
-            const member = members.get(interaction.user.id);
-            if (args !== undefined && args.find((a: any) => a.type === 'USER')) {
-              const mentionId = args.find((arg: any) => arg.type === 'USER').value;
-              message = {
-                id: interaction.id,
-                guild: guild,
-                channel: channel,
-                member: member,
-                author: member?.user,
-                mention: members.get(mentionId)?.user,
-                interaction,
-              };
-            } else {
-              message = {
-                id: interaction.id,
-                guild: guild,
-                channel: channel,
-                member: member,
-                author: member?.user,
-                interaction,
-              };
-            }
-          })
-          .catch((err) => console.error(err));
+
+        if (
+          command.admin &&
+          !(interaction.member?.roles as GuildMemberRoleManager).cache.find(
+            (role: Role) => role.name === this.bot.config.adminRole,
+          )
+        ) {
+          interaction.reply({
+            embeds: [
+              ErrorEmbed(
+                this.bot,
+                `**${this.bot.name()} - Error**`,
+                `You don't have the permission to execute this admin command.`,
+              ),
+            ],
+            ephemeral: true,
+          });
+          return;
+        }
+
+        if (
+          command.roles &&
+          command.roles.length > 0 &&
+          command.roles.find(
+            (role) => !(interaction.member?.roles as GuildMemberRoleManager).cache.find((r: Role) => r.name === role),
+          )
+        ) {
+          interaction.reply({
+            embeds: [
+              ErrorEmbed(
+                this.bot,
+                `**${this.bot.name()} - Error**`,
+                `You don't have sufficient permissions to execute this command.`,
+              ),
+            ],
+            ephemeral: true,
+          });
+          return;
+        }
+
         const newArgs = args !== undefined ? args.map((el: any) => el.value) : [];
-        Promise.resolve((command as any).execute(this.bot, message, newArgs))
+        Promise.resolve((command as any).execute(this.bot, interaction, newArgs))
           .then(async (result: string | EmbedBuilder | MessageFormatter | ModalBuilder | EmbedPaginator) => {
             if (result) {
               let finalResult = null;
@@ -141,9 +158,8 @@ export class InteractionHandler {
               if (!(result.constructor.name === 'ModalConstructor' || result.constructor.name === 'ModalBuilder')) {
                 if (this.bot.config.autoLog)
                   this.bot.log(
-                    `${interaction.command?.name} command executed by ${
-                      message.author.username
-                    } with following args: [${args.map((a: any) => '{' + a.name + ': ' + a.value + '}').join(', ')}]`,
+                    `${interaction.command?.name} command executed by ${interaction.member?.user.username}
+                     with following args: [${args.map((a: any) => '{' + a.name + ': ' + a.value + '}').join(', ')}]`,
                   );
               }
             }

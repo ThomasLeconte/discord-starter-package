@@ -6,6 +6,7 @@ export class Command {
   usage: string;
   slashCommand?: SlashCommandConfig;
   admin: boolean;
+  roles?: string[];
   // alias?: string[];
   execute: void;
   private?: boolean;
@@ -43,6 +44,8 @@ export class Command {
         `You must specify name, description, usage, admin property and execute function to your "${data.name}" command.`,
       );
     }
+
+    this.roles = data.roles;
     // if(this.alias){
     //   if(!Array.isArray(this.alias)){
     //     throw new Error(`Alias property of your "${this.name}" command must be an array !`);

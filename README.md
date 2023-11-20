@@ -52,32 +52,42 @@ This method take many options :
 }
 ```
 
-Have a look to all properties of an environment :
-
-- `name`: Your bot name
-- `token`: Your bot private token
-- `prefix`: Prefix for basic commands (does not work with slash commands!). Ex. of `"prefix": "!starter"` the `ping` command will listen to the Discord message `!starterping` instead of `ping`.
-- `autoLog`: Define if you want automatic logs when commands are executed for see command name, player and arguments provided.
-- `adminRole`: Admin role name who's needed to admin commands. User will need to have a role with this name to allow execution.
-- `options`: Options that you want to add on your bot. This property is just a copy of `Discord.CLientOptions` class. The `intents` list (ex. `"options": { "intents": [ "Guilds", "GuildMembers", "GuildMessages", "MessageContent" ] }`, read more about options in the [Discord Docs](https://old.discordjs.dev/#/docs/discord.js/14.11.0/typedef/ClientOptions)
-- `webhooks`: List of webhooks that you want to use in your code.
-- `defaultCommandsDisabled`: List of default commands provided by this package that you want to disable. You can disable one of these commands: `help`, `disableCommand`, `feedback`, `ping`
-- `commandFolders`: Folders the bot loads commands from, relative to your root folder. If unset defaults to `['commands']`
+Have a look to all properties :
+|     argument    | Required | Type | Default | Description |
+|:--------------:|:-----------:|:-----------:|:-----------:|:-----------:|
+| name | ✅ | String | - | Your bot name |
+| token | ✅ | String | - | Your bot private token |
+| prefix | ❌ | String | `/` | Prefix for basic commands (does not work with slash commands!). Ex. of `"prefix": "!"` the `ping` command will listen to the Discord message `!ping` instead of `ping`. |
+| autoLog | ❌ | Boolean | `false` | Define if you want automatic logs when commands are executed for see command name, player and arguments provided. |
+| adminRole | ❌ | String | `Admin` | Your bot name |
+| options | ❌ | [Discord.ClientOptions](https://old.discordjs.dev/#/docs/discord.js/14.11.0/typedef/ClientOptions) | `{ "intents": [ "Guilds", "GuildMembers", "GuildMessages", "MessageContent" ] }` | Options that you want to add on your bot. This property is just a copy of `Discord.CLientOptions` class. |
+| webhooks | ❌ | `{name: String; url: String}` | - | Your bot name |
+| defaultCommandsDisabled | ❌ | String[] | `[]` | List of default commands provided by this package that you want to disable. You can disable one of these commands: `help`, `disableCommand`, `feedback`, `ping`, `reload` |
+| commandFolders | ❌ | String[] | `["commands"]` | Folders the bot loads commands from, relative to your root folder. |
+| | | |
 
 Finally, you can launch your discord bot with `node main.js` or `ts-node main.ts` if you're using Typescript.
 
 #### **An example of implementation has been made in ["example" folder](https://github.com/ThomasLeconte/discord-starter-package/tree/master/example) of this repository.**
 
 ## Commands
-Your commands must either be located in a `commands` folder at root of your project, or in folders configured through the `commandFolders` array given on initialization, to be detected during bot initialization.Then, each command can be declared with `module.exports` or with a **default exported class**. Basically, a new command without slash command system should be like that :
+Your commands must either be located in a `commands` folder at root of your project, or in folders configured through the `commandFolders` array given on initialization, to be detected during bot initialization.Then, each command can be declared with `module.exports` or with a **default exported class**. 
+
+|     argument    | Required | Type | Default | Description |
+|:--------------:|:-----------:|:-----------:|:-----------:|:-----------:|
+| **name** | ✅ | String | - | Name of command |
+| **description** | ✅ | String | - | Description of command displayed in `help` command result |
+| **usage** | ✅ | String | - | Usage of command displayed in `help` |
+| **admin** | ✅ | Boolean | - | Permission guard |
+| **roles** | ❌ | String[] | - | Roles needed to execute command |
+| **slashCommand** | ❌ | {data: SlashCommandBuilder} | - | data of Slash-Command to initialize |
+| **private** | ❌ | Boolean | `false` | Send result in private message or private interaction reply |
+| | | |
+
+Basically, a new command without slash command system should be like that :
 ```js
 module.exports = {
-  name: '',
-  description: '',
-  usage: '', //How use command (explain parameters) => showed in /help command
-  private: false, //It will send private message
-  admin: false,
-
+  ..., //required and optional options
   execute(client, message, args) {},
 };
 ```
@@ -91,7 +101,6 @@ module.exports = {
     data: new SlashCommandBuilder()
             .setName("yourCommandName")
             .setDescription("Your command description"),
-    private: true //Optional, but it show the result of execution only for the message author.
   },
   ...,
 
@@ -109,7 +118,7 @@ export default class MyCommand extends AbstractCommand {
     protected desc = "A fantastic command";
     protected usage = "/my-command";
     protected admin = false;
-    execute(client, message, args: any[]) {
+    execute(client, message, args) {
         return "Hello world!";
     }
 }

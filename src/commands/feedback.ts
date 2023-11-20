@@ -1,4 +1,4 @@
-import { Interaction, InteractionType, Message, SlashCommandBuilder } from 'discord.js';
+import { Interaction, InteractionType, SlashCommandBuilder } from 'discord.js';
 import { Bot } from '../models/bot';
 import ModalConstructor from '../Tools/ModalConstructor';
 import { EventType } from '../enums';
@@ -12,7 +12,7 @@ module.exports = {
   },
   admin: false,
 
-  async execute(client: Bot, message: Message, args: string[]) {
+  async execute(client: Bot, message: Interaction, args: string[]) {
     const feedbackKey = 'feedback_modal';
     const modal = new ModalConstructor("What's your opinion ?", feedbackKey).addTextInput(
       { label: 'Your feedback', custom_id: 'feedback_input' },

@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from 'discord.js';
+import { GuildMemberRoleManager, Interaction, Message, SlashCommandBuilder } from 'discord.js';
 import { Bot } from '../models/bot';
 import { ErrorEmbed, SuccessEmbed } from '../Tools/EmbedMessage';
 import { MessageFormatter } from '../Tools/MessageFormatter';
@@ -20,9 +20,9 @@ module.exports = {
   },
   admin: true,
 
-  async execute(client: Bot, message: Message, args: any[]) {
+  async execute(client: Bot, message: Interaction, args: any[]) {
     if (args[0]) {
-      if (message.member?.roles.cache.find((r) => r.name === client.config.adminRole)) {
+      if ((message.member?.roles as GuildMemberRoleManager).cache.find((r) => r.name === client.config.adminRole)) {
         if (client.commands.has(args[0])) {
           if (client.disabledCommands.has(args[0])) {
             client.disabledCommands.delete(args[0]);

@@ -22,7 +22,7 @@ function checkConfiguration(config: BotConfig): Promise<BotConfig> {
     throw new Error('No token provided in the configuration !');
   }
 
-  if (!config.name) consoleWarn("⚠️ No name provided in the configuration, using default name : 'Discord Bot'");
+  // if (!config.name) consoleWarn("⚠️ No name provided in the configuration, using default name : 'Discord Bot'");
 
   if (!config.options) {
     consoleWarn(
@@ -54,7 +54,7 @@ function checkConfiguration(config: BotConfig): Promise<BotConfig> {
 
   if (!config.commandFolders) consoleWarn("⚠️ No commandFolders set, defaulting to ['commands']");
 
-  config.name = config.name || 'Discord Bot';
+  // config.name = config.name || 'Discord Bot';
   config.options = config.options || { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] };
   config.prefix = config.prefix || '/';
   config.defaultCommandsDisabled = config.defaultCommandsDisabled || [];

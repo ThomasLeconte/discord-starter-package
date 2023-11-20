@@ -1,4 +1,4 @@
-import { Message, SlashCommandBuilder } from 'discord.js';
+import { Message } from 'discord.js';
 import { Bot } from '../models/bot';
 import { CommandsRegister } from '../Tools/CommandsRegister';
 import { ErrorEmbed } from '../Tools/EmbedMessage';

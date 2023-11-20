@@ -50,6 +50,35 @@ export class MessageHandler {
             console.error(`Command ${commandName} not found !`);
             return;
           }
+
+          if (command.admin && !msg.member?.roles.cache.find((role) => role.name === this.bot.config.adminRole)) {
+            this.bot.sendMessage(
+              msg,
+              ErrorEmbed(
+                this.bot,
+                `**${this.bot.name()} - Error**`,
+                `You don't have the permission to execute this admin command.`,
+              ),
+            );
+            return;
+          }
+
+          if (
+            command.roles &&
+            command.roles.length > 0 &&
+            command.roles.find((role) => !msg.member?.roles.cache.find((r) => r.name === role))
+          ) {
+            this.bot.sendMessage(
+              msg,
+              ErrorEmbed(
+                this.bot,
+                `**${this.bot.name()} - Error**`,
+                `You don't have sufficient permissions to execute this command.`,
+              ),
+            );
+            return;
+          }
+
           Promise.resolve((command as any).execute(this.bot, msg, args))
             .then((result: string | EmbedBuilder | MessageFormatter | EmbedPaginator) => {
               if (result) {

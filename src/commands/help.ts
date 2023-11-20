@@ -1,4 +1,4 @@
-import { APIEmbedField, Message, SlashCommandBuilder } from 'discord.js';
+import { APIEmbedField, Interaction, SlashCommandBuilder } from 'discord.js';
 import { Bot } from '../models/bot';
 import { EmbedMessage } from '../Tools/EmbedMessage';
 import { Command } from '../models/command';
@@ -15,7 +15,7 @@ module.exports = {
   admin: false,
   alias: ['aide'],
 
-  async execute(client: Bot, message: Message, args: string[]) {
+  async execute(client: Bot, message: Interaction, args: string[]) {
     const commands: APIEmbedField[] = [];
     client.commands.forEach((command: Command) => {
       if (!command.admin) {
