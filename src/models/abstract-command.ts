@@ -8,11 +8,6 @@ export default abstract class AbstractCommand {
   protected abstract admin: boolean;
   protected slashCommand?: { data: SlashCommandBuilder; private: boolean };
   protected private?: boolean;
-  private filePath: string;
-
-  constructor() {
-    this.filePath = process.cwd();
-  }
 
   getMeta(): any {
     return {
@@ -22,7 +17,6 @@ export default abstract class AbstractCommand {
       admin: this.admin,
       slashCommand: this.slashCommand,
       private: this.private,
-      filePath: this.filePath,
       execute: this.execute,
       isClassCommand: true,
     };

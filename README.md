@@ -11,7 +11,7 @@ Little package for start a discord bot fastly and easily, allowing you to focus 
 ## Summary
 
 [How use it ?](#how-use-it)  
-[Commands](#commands)  
+[Commands (**New features since v2.4.0**)](#commands)  
 [Messages](#message)  
 [Embed pagination](#embeds-pagination)  
 [Modal Constructor](#modal-constructor)  
@@ -114,6 +114,9 @@ export default class MyCommand extends AbstractCommand {
     }
 }
 ```
+
+### Dev cycle
+During your development, you can dynamically reload one command using `/reload <optional name command>` command included in this library. If you're not specifying a command name, it will reload all commands. 
 
 ## Message
 

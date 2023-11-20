@@ -16,7 +16,7 @@ export class CommandsRegister {
       const isClassCommand = typeof require(command.filePath).default === 'function';
 
       const newCommand = isClassCommand
-        ? this.mapToCommand(new (require(command.filePath).default)())
+        ? this.mapToCommand(new (require(command.filePath).default)(), command.filePath)
         : new Command(require(command.filePath), command.filePath);
 
       bot.commands.delete(command.name.toLowerCase());
@@ -93,7 +93,7 @@ export class CommandsRegister {
           const isClassCommand = typeof require(filePath).default === 'function';
 
           const command = isClassCommand
-            ? this.mapToCommand(new (require(filePath).default)())
+            ? this.mapToCommand(new (require(filePath).default)(), filePath)
             : new Command(require(filePath), filePath);
 
           bot.commands.set(command.name.toLowerCase(), command);
@@ -198,8 +198,8 @@ export class CommandsRegister {
       });
   }
 
-  private static mapToCommand(command: AbstractCommand): Command {
+  private static mapToCommand(command: AbstractCommand, filePath: string): Command {
     const meta = command.getMeta();
-    return new Command(meta, meta.filePath);
+    return new Command(meta, filePath);
   }
 }

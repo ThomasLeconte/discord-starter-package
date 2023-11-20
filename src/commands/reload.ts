@@ -7,15 +7,6 @@ module.exports = {
   name: 'reload',
   description: 'Reload one or all commands',
   usage: '/reload',
-  slashCommand: {
-    data: new SlashCommandBuilder()
-      .setName('reload')
-      .setDescription('Reload one or all commands')
-      .addStringOption((option) =>
-        option.setName('name').setDescription("Command's name you want to reload").setRequired(false),
-      ),
-    private: true,
-  },
   admin: true,
 
   async execute(client: Bot, message: Message, args: string[]) {
