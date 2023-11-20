@@ -1,14 +1,18 @@
-import { Bot, EventType, Command } from './Bot';
+import { Bot } from './models/bot';
 import { ErrorEmbed, SuccessEmbed, EmbedMessage } from './Tools/EmbedMessage';
 import { EmbedPaginator, PaginationOption } from './Tools/EmbedPaginator';
 import ModalConstructor from './Tools/ModalConstructor';
-import { MessageFormatter, SelectMenuType } from './Tools/MessageFormatter';
+import { MessageFormatter } from './Tools/MessageFormatter';
 import { init } from './init';
+import { Command } from './models/command';
+import { EventType, SelectMenuType } from './enums';
+import AbstractCommand from './models/abstract-command';
 
 export {
   Bot,
   init,
   Command,
+  AbstractCommand,
   EventType,
   SelectMenuType,
   ErrorEmbed,

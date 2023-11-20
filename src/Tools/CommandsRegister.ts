@@ -1,10 +1,70 @@
 import { REST, Routes } from 'discord.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Bot, Command } from '../Bot';
+import { Bot } from '../models/bot';
 import { consoleWarn } from './LogUtils';
+import AbstractCommand from '../models/abstract-command';
+import { Command } from '../models/command';
+import { ErrorEmbed, SuccessEmbed } from './EmbedMessage';
 
 export class CommandsRegister {
+  static reloadCommand(bot: Bot, commandName: string) {
+    const reload = (command: Command) => {
+      console.log("Reloading command '" + command.name + "'...");
+      delete require.cache[require.resolve(command.filePath)];
+
+      const isClassCommand = typeof require(command.filePath).default === 'function';
+
+      const newCommand = isClassCommand
+        ? this.mapToCommand(new (require(command.filePath).default)(), command.filePath)
+        : new Command(require(command.filePath), command.filePath);
+
+      bot.commands.delete(command.name.toLowerCase());
+      bot.commands.set(command.name.toLowerCase(), newCommand);
+    };
+
+    if (commandName === 'all') {
+      // circular forEach ==> temp clone
+      const _commands = [...bot.commands.values()];
+
+      for (const command of _commands) {
+        if (fs.existsSync(command.filePath)) {
+          reload(command);
+        } else {
+          return ErrorEmbed(
+            bot,
+            `Error during command reload`,
+            `**${command.name}** cannot be reloaded. Error code : FILE_NOT_FOUND`,
+          );
+        }
+      }
+
+      return SuccessEmbed(bot, `All commands reloaded`, `All commands have been reloaded.`);
+    } else {
+      if (bot.commands.has(commandName)) {
+        const command = bot.commands.get(commandName);
+        if (command) {
+          if (fs.existsSync(command.filePath)) {
+            reload(command);
+          } else {
+            return ErrorEmbed(
+              bot,
+              `Error during command reload`,
+              `**${command.name}** cannot be reloaded. Error code : FILE_NOT_FOUND`,
+            );
+          }
+        }
+        return SuccessEmbed(bot, `Command reloaded`, `**${commandName}** has been reloaded.`);
+      } else {
+        return ErrorEmbed(
+          bot,
+          `Error during command reload`,
+          `**${commandName}** cannot be reloaded. Error code : COMMAND_NOT_FOUND`,
+        );
+      }
+    }
+  }
+
   static async registerCommands(bot: Bot) {
     const commandsPathPrefix = `${require.main?.path}/`;
     const commandFolders = bot.config.commandFolders;
@@ -28,7 +88,13 @@ export class CommandsRegister {
 
         // CUSTOM COMMANDS OF USER
         for (const file of commandFiles) {
-          const command = new Command(require(`${commandsPath}/${file}`));
+          const filePath = `${commandsPath}/${file}`;
+
+          const isClassCommand = typeof require(filePath).default === 'function';
+
+          const command = isClassCommand
+            ? this.mapToCommand(new (require(filePath).default)(), filePath)
+            : new Command(require(filePath), filePath);
 
           bot.commands.set(command.name.toLowerCase(), command);
           if (command.slashCommand !== undefined) {
@@ -75,7 +141,8 @@ export class CommandsRegister {
     // DEFAULT COMMANDS OF LIB
     for (const file of defaultCommandFiles) {
       if (bot.config.defaultCommandsDisabled!.includes(file.replace('.js', ''))) continue;
-      const command = new Command(require(`${defaultCommandsPath}/${file}`));
+      const filePath = `${defaultCommandsPath}/${file}`;
+      const command = new Command(require(filePath), filePath);
       bot.commands.set(command.name.toLowerCase(), command);
       if (command.slashCommand) {
         if (command.slashCommand.data !== undefined) {
@@ -129,5 +196,10 @@ export class CommandsRegister {
         //   console.log(`Updated ${(result as any[]).map((r) => r.name.join(', '))} slash commands`);
         // });
       });
+  }
+
+  private static mapToCommand(command: AbstractCommand, filePath: string): Command {
+    const meta = command.getMeta();
+    return new Command(meta, filePath);
   }
 }

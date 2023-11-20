@@ -1,5 +1,5 @@
 import { ButtonStyle, EmbedField, Message } from 'discord.js';
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 import { EmbedMessage } from './EmbedMessage';
 import { MessageFormatter } from './MessageFormatter';
 

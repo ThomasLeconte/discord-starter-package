@@ -1,6 +1,7 @@
 import { APIEmbedField, Message, SlashCommandBuilder } from 'discord.js';
-import { Bot, Command } from '../Bot';
+import { Bot } from '../models/bot';
 import { EmbedMessage } from '../Tools/EmbedMessage';
+import { Command } from '../models/command';
 
 module.exports = {
   name: 'help',

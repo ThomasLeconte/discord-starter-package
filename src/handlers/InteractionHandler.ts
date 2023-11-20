@@ -1,5 +1,5 @@
 import { EmbedBuilder, Interaction, InteractionReplyOptions, InteractionType, ModalBuilder } from 'discord.js';
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 import { ErrorEmbed } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
 import { MessageFormatter } from '../Tools/MessageFormatter';
@@ -108,8 +108,7 @@ export class InteractionHandler {
           })
           .catch((err) => console.error(err));
         const newArgs = args !== undefined ? args.map((el: any) => el.value) : [];
-        await (command as any)
-          .execute(this.bot, message, newArgs)
+        Promise.resolve((command as any).execute(this.bot, message, newArgs))
           .then(async (result: string | EmbedBuilder | MessageFormatter | ModalBuilder | EmbedPaginator) => {
             if (result) {
               let finalResult = null;

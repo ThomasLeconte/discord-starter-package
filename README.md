@@ -11,7 +11,7 @@ Little package for start a discord bot fastly and easily, allowing you to focus 
 ## Summary
 
 [How use it ?](#how-use-it)  
-[Commands](#commands)  
+[Commands (**New features since v2.4.0**)](#commands)  
 [Messages](#message)  
 [Embed pagination](#embeds-pagination)  
 [Modal Constructor](#modal-constructor)  
@@ -69,7 +69,7 @@ Finally, you can launch your discord bot with `node main.js` or `ts-node main.ts
 #### **An example of implementation has been made in ["example" folder](https://github.com/ThomasLeconte/discord-starter-package/tree/master/example) of this repository.**
 
 ## Commands
-Your commands must either be located in a `commands` folder at root of your project, or in folders configured through the `commandFolders` array given on initialization, to be detected during bot initialization. Then, each command **must follow** a specific pattern. The file will have to be a module exported, with differents arguments. Basically, a new command without slash command system should be like that :
+Your commands must either be located in a `commands` folder at root of your project, or in folders configured through the `commandFolders` array given on initialization, to be detected during bot initialization.Then, each command can be declared with `module.exports` or with a **default exported class**. Basically, a new command without slash command system should be like that :
 ```js
 module.exports = {
   name: '',
@@ -78,27 +78,45 @@ module.exports = {
   private: false, //It will send private message
   admin: false,
 
-  async execute(client, message, args) {},
+  execute(client, message, args) {},
 };
 ```
 
-Then, if you want to declare a slash command, you just need to provide this property after `admin` property showed before :
+Then, if you want to declare a slash command, you just need to provide this configuration :
 
 ```js
 module.exports = {
   ...
-  admin: false,
   slashCommand: {
     data: new SlashCommandBuilder()
             .setName("yourCommandName")
             .setDescription("Your command description"),
     private: true //Optional, but it show the result of execution only for the message author.
-  }
+  },
+  ...,
 
-  async execute(client, message, args){
+  execute(client, message, args){
   }
 }
 ```
+
+You can also use a class extending `AbstractCommand`. Here is an example :
+```js
+import { AbstractCommand } from 'discord-starter-package'
+
+export default class MyCommand extends AbstractCommand {
+    protected name = "my-command";
+    protected desc = "A fantastic command";
+    protected usage = "/my-command";
+    protected admin = false;
+    execute(client, message, args: any[]) {
+        return "Hello world!";
+    }
+}
+```
+
+### Dev cycle
+During your development, you can dynamically reload one command using `/reload <optional name command>` command included in this library. If you're not specifying a command name, it will reload all commands. 
 
 ## Message
 

@@ -1,13 +1,16 @@
 import { exec } from 'child_process';
 import { lt } from 'es-semver';
-import { Bot, BotConfig } from './Bot';
+import { Bot, BotInstance } from './models/bot';
 import { consoleError, consoleWarn } from './Tools/LogUtils';
+import { BotConfig } from './types';
 
 function init(config: BotConfig): Promise<Bot> {
   // const bot = new Bot(config);
   return checkConfiguration(config)
     .then((validConfig) => {
-      return new Bot(validConfig);
+      const bot = new Bot(validConfig);
+      BotInstance.setInstance(bot);
+      return bot;
     })
     .finally(() => {
       checkPackageVersion();

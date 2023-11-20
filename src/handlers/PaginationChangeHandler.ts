@@ -1,5 +1,5 @@
 import { ButtonInteraction, ButtonStyle, ComponentType, InteractionResponse, Message, User } from 'discord.js';
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 import { EmbedMessage } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
 import { MessageFormatter } from '../Tools/MessageFormatter';

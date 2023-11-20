@@ -1,6 +1,7 @@
 import { Interaction, InteractionType, Message, SlashCommandBuilder } from 'discord.js';
-import { Bot, EventType } from '../Bot';
+import { Bot } from '../models/bot';
 import ModalConstructor from '../Tools/ModalConstructor';
+import { EventType } from '../enums';
 
 module.exports = {
   name: 'feedback',

@@ -1,4 +1,4 @@
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 import * as fs from 'fs';
 
 export class Logger {

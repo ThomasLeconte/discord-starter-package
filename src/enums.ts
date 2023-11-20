@@ -1,0 +1,14 @@
+export enum EventType {
+  BUTTON_EVENT = 'BUTTON',
+  SELECT_MENU_EVENT = 'SELECT_MENU',
+  CONTEXT_MENU_EVENT = 'CONTEXT_MENU',
+  MODAL_SUBMIT_EVENT = 'MODAL_SUBMIT',
+}
+
+export enum SelectMenuType {
+  STRING,
+  ROLE,
+  USER,
+  MENTIONABLE,
+  CHANNEL,
+}

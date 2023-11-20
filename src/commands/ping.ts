@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 
 module.exports = {
   name: 'ping',

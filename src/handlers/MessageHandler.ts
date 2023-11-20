@@ -1,5 +1,5 @@
 import { EmbedBuilder, Interaction } from 'discord.js';
-import { Bot } from '../Bot';
+import { Bot } from '../models/bot';
 import { ErrorEmbed } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
 import { MessageFormatter } from '../Tools/MessageFormatter';
@@ -50,8 +50,7 @@ export class MessageHandler {
             console.error(`Command ${commandName} not found !`);
             return;
           }
-          await (command as any)
-            .execute(this.bot, msg, args)
+          Promise.resolve((command as any).execute(this.bot, msg, args))
             .then((result: string | EmbedBuilder | MessageFormatter | EmbedPaginator) => {
               if (result) {
                 const isPrivateResult = command.private !== undefined && command.private === true;
