@@ -1,11 +1,11 @@
 import { REST, Routes } from 'discord.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Bot } from '../models/bot';
-import { consoleWarn } from './LogUtils';
 import AbstractCommand from '../models/abstract-command';
+import { Bot } from '../models/bot';
 import { Command } from '../models/command';
 import { ErrorEmbed, SuccessEmbed } from './EmbedMessage';
+import { consoleWarn } from './LogUtils';
 
 export class CommandsRegister {
   static reloadCommand(bot: Bot, commandName: string) {
@@ -128,6 +128,11 @@ export class CommandsRegister {
             .map((c) => bot.config.prefix + c.name)
             .join(', ')}`,
         );
+        if (bot.config.commandsDisabled && bot.config.commandsDisabled.length > 0) {
+          console.log(
+            `# Disabled commands : ${bot.config.commandsDisabled.map((c) => bot.config.prefix + c).join(', ')}`,
+          );
+        }
         console.log('# - - - - COMMANDS - - - - #\n', '\x1b[0m');
       })
       .catch((err) => console.error(err));
@@ -140,7 +145,7 @@ export class CommandsRegister {
 
     // DEFAULT COMMANDS OF LIB
     for (const file of defaultCommandFiles) {
-      if (bot.config.commandsDisabled!.includes(file.replace('.js', ''))) continue;
+      // if (bot.config.commandsDisabled!.includes(file.replace('.js', ''))) continue;
       const filePath = `${defaultCommandsPath}/${file}`;
       const command = new Command(require(filePath), filePath);
       bot.commands.set(command.name.toLowerCase(), command);

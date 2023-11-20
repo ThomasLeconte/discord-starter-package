@@ -7,10 +7,10 @@ import {
   ModalBuilder,
   Role,
 } from 'discord.js';
-import { Bot } from '../models/bot';
 import { ErrorEmbed } from '../Tools/EmbedMessage';
 import { EmbedPaginator } from '../Tools/EmbedPaginator';
 import { MessageFormatter } from '../Tools/MessageFormatter';
+import { Bot } from '../models/bot';
 import { PaginationChangeHandler } from './PaginationChangeHandler';
 
 export class InteractionHandler {
@@ -76,7 +76,9 @@ export class InteractionHandler {
 
         if (this.bot.disabledCommands.has(command.name)) {
           interaction.reply({
-            embeds: [ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${command}" is disabled !`)],
+            embeds: [
+              ErrorEmbed(this.bot, `**${this.bot.name()} - Error**`, `The command "${command.name}" is disabled !`),
+            ],
           });
           return;
         }

@@ -58,7 +58,7 @@ export class Bot extends Client {
 
   private initializeTools() {
     CommandsRegister.registerCommands(this).then(() => {
-      if(this.config.commandsDisabled){
+      if (this.config.commandsDisabled) {
         this.config.commandsDisabled.forEach((command) => {
           this.disabledCommands.set(command, true);
         });
