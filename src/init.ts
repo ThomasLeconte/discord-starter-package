@@ -57,7 +57,7 @@ function checkConfiguration(config: BotConfig): Promise<BotConfig> {
   // config.name = config.name || 'Discord Bot';
   config.options = config.options || { intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'] };
   config.prefix = config.prefix || '/';
-  config.defaultCommandsDisabled = config.defaultCommandsDisabled || [];
+  config.commandsDisabled = config.commandsDisabled || [];
   config.autoLog = config.autoLog || false;
   config.adminRole = config.adminRole || 'Admin';
   config.commandFolders = config.commandFolders || ['commands'];
