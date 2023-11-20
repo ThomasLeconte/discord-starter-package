@@ -48,7 +48,7 @@ This method take many options :
   "options": {}, //ClientOptions instance
   "webhooks": [], //optional
   "commandFolders": [], //optional
-  "defaultCommandsDisabled": [] //optional, to disable all use: ["disableCommand", "feedback", "help", "ping"]
+  "commandsDisabled": [] //optional, to disable all use: ["disableCommand", "feedback", "help", "ping"]
 }
 ```
 
@@ -62,7 +62,7 @@ Have a look to all properties :
 | adminRole | ❌ | String | `Admin` | Your bot name |
 | options | ❌ | [Discord.ClientOptions](https://old.discordjs.dev/#/docs/discord.js/14.11.0/typedef/ClientOptions) | `{ "intents": [ "Guilds", "GuildMembers", "GuildMessages", "MessageContent" ] }` | Options that you want to add on your bot. This property is just a copy of `Discord.CLientOptions` class. |
 | webhooks | ❌ | `{name: String; url: String}` | - | Your bot name |
-| defaultCommandsDisabled | ❌ | String[] | `[]` | List of default commands provided by this package that you want to disable. You can disable one of these commands: `help`, `disableCommand`, `feedback`, `ping`, `reload` |
+| commandsDisabled | ❌ | String[] | `[]` | List of commands you want to disable. You can disable one of defaults commands: `help`, `disableCommand`, `feedback`, `ping`, `reload` |
 | commandFolders | ❌ | String[] | `["commands"]` | Folders the bot loads commands from, relative to your root folder. |
 | | | |
 
